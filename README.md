@@ -14,7 +14,21 @@ Don't touch Modules/psd1. It is generated automatically.
 
 Don't touch init-project.ps1. It is the entry point for the project.
 
-If you want to execute a file, go to the file and press __CRT+MAJ+B__. There is some tasks configured. Choose the tasks "Ask Current Script".
+If you want to execute a file, go to the file and press __CRT+MAJ+B__. There is some tasks configured. Choose the tasks "Ask Current Script".  
 Also, you can just do __CRT+MAJ+B__ and select "Launch A Script". Then, you can give the path in the src directory. (don't touch ${workspaceFolder}/src, just change after that the path).
 
 
+## Create a Class
+
+You create a file in the Modules directory (in one of the existing directories in it or in a new). The extension for a module is __.psm1__.    
+You create your class.  
+In the __"Resources/Config/config.json"__, you need to indicate your class in __'ModulePaths'__ :
+- In __Path__, you give the path from the root to the directory of you module with the class.
+- In __Classes__, you add an object with the name of the file (without the extension).
+
+If you add a class in an existing repository, you can just add an object in the Path corresponding.
+
+And, to import your project, you need to use :
+```
+using Module <path_from_root_dir_to_file>
+```
