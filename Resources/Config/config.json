@@ -1,0 +1,20 @@
+{
+    "ModulePaths" : [
+        {
+            "Path" : "\\Modules\\Core",
+            "Classes": [
+                {
+                    "Name": "Service"
+                }
+            ]
+        },
+        {
+            "Path": "\\Modules\\AD",
+            "Classes": [
+                {
+                    "Name": "ADDS"
+                }
+            ]
+        }
+    ]
+}

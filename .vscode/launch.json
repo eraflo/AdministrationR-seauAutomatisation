@@ -1,0 +1,38 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            // Launch init-project.ps1 before the current file
+            "name": "Launch Current Script",
+            "type": "PowerShell",
+            "request": "launch",
+            "script": "${workspaceFolder}/init-project.ps1",
+            "args": [
+                "-ScriptToLaunchPath",
+                "${workspaceFolder}\\${relativeFile}"
+            ],
+        },
+        {
+            // Launch init-project.ps1 before a file provided by the user in the same console
+            "name": "Ask A Script",
+            "type": "PowerShell",
+            "request": "launch",
+            "script": "${workspaceFolder}/init-project.ps1",
+            "args": [
+                "-ScriptToLaunchPath",
+                "${input:scriptToLaunchPath}"
+            ],
+        }
+    ],
+    "inputs": [
+        {
+            "id": "scriptToLaunchPath",
+            "type": "promptString",
+            "description": "Enter the path of the script to launch",
+            "default": "${workspaceFolder}\\src\\Services\\generate-ad-from-json.ps1"
+        }
+    ]
+}
