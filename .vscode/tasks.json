@@ -1,0 +1,42 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            // Launch init-project.ps1 before a file provided by the user in the same console
+            "label": "Launch A Script",
+            "type": "shell",
+            "command": "${workspaceFolder}/init-project.ps1",
+            "args": [
+                "-ScriptToLaunchPath",
+                "${input:scriptToLaunchPath}"
+            ],
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "Ask Current Script",
+            "type": "shell",
+            "command": "${workspaceFolder}/init-project.ps1",
+            "args": [
+                "-ScriptToLaunchPath",
+                "'${workspaceFolder}\\${relativeFile}'"
+            ],
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ],
+    "inputs": [
+        {
+            "id": "scriptToLaunchPath",
+            "type": "promptString",
+            "description": "Enter the path of the script to launch",
+            "default": "${workspaceFolder}\\src\\Services\\generate-ad-from-json.ps1"
+        }
+    ]
+}
