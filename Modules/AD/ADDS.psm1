@@ -3,6 +3,8 @@ using Module ./Modules/Core/Service.psm1
 # Class for Active Directory Domain Services
 class ADDS : Service {
 
+    # ----------------- Public functions -----------------
+
     # Implement the constructor
     ADDS() {
         $this.Name = "ADDS"
@@ -34,6 +36,28 @@ class ADDS : Service {
         $this.Status = "Running"
     }
 
+    # Create a new forest
+    [void]CreateForest($Name, $DomainMode, $ForestMode, $Password) {
+        Write-Host "Creating a new forest..."
+        
+        # Secure the password if it is not already
+        if ($Password -isnot [securestring]) {
+            $Password = ConvertTo-SecureString -String $Password -AsPlainText -Force
+        }
+
+        # Create the new forest
+        Install-ADDSForest -DomainName $Name -DomainMode $DomainMode -ForestMode $ForestMode -SafeModeAdministratorPassword $Password -Force:$true
+
+        # Message of success
+        Write-Host "New forest created successfully"
+
+        # Restart the computer
+        Write-Host "Restarting the computer..."
+        Restart-Computer -Force
+    }
+
+    # ----------------- Private functions -----------------
+
     # Implement the Install method
     hidden [void]Install() {
         Write-Host "Installing Active Directory Domain Services..."
@@ -46,6 +70,10 @@ class ADDS : Service {
 
             # Message of success
             Write-Host "Active Directory Domain Services installed successfully"
+
+            # Restart the computer
+            Write-Host "Restarting the computer..."
+            Restart-Computer -Force
         }
         else {
             # Message to inform that the ADDS role is already installed
