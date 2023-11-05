@@ -4,7 +4,7 @@ using Module ./Modules/AD/ADLDS.psm1
 # Class for Active Directory Domain Services
 class ADDS : Service {
 
-    hidden [ADLDS]AD_LDS = $null
+    hidden [ADLDS]$AD_LDS
 
     # ----------------- Public functions -----------------
 
