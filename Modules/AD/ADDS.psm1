@@ -10,7 +10,7 @@ class ADDS : Service {
         $this.Name = "ADDS"
         $this.Description = "Active Directory Domain Services (ADDS) is a directory service from Microsoft that stores information about objects on a network and makes this information available to users and network administrators."
         $this.Path = "C:\Windows\System32\ntds.exe"
-        $this.Status = [Statuts]::Stopped
+        [ADDS]::Statut = [Statuts]::Stopped
 
         $this.Install()
         Import-Module -Name ActiveDirectory
@@ -21,21 +21,21 @@ class ADDS : Service {
     [void]Start() {
         Write-Host "Starting Active Directory Domain Services..."
         Start-Service -Name "NTDS"
-        $this.Status = [Statuts]::Running
+        [ADDS]::Statut = [Statuts]::Running
     }
 
     # Implement the Stop method
     [void]Stop() {
         Write-Host "Stopping Active Directory Domain Services..."
         Stop-Service -Name "NTDS"
-        $this.Status = [Statuts]::Stopped
+        [ADDS]::Statut = [Statuts]::Stopped
     }
 
     # Implement the Restart method
     [void]Restart() {
         Write-Host "Restarting Active Directory Domain Services..."
         Restart-Service -Name "NTDS"
-        $this.Status = [Statuts]::Running
+        [ADDS]::Statut = [Statuts]::Running
     }
 
     # Create a new forest
