@@ -27,4 +27,4 @@ $NetworkAdapterInfo = $ADConfig.Forest.DomainController.NetAdapter
 $DC = [DC]::new($ADConfig.Forest.DomainController.Name, $ADConfig.Forest.DomainController.Site, $ADConfig.Forest.CN1 + "." + $ADConfig.Forest.CN2, $ADConfig.Forest.CN1 + "." + $ADConfig.Forest.CN2, $ADConfig.Forest.DomainController.OSVersion, $ADConfig.Forest.DomainController.InstallDNS, $Adapters)
 
 # Promote the domain controller
-$DC.Promote($ADConfig.Forest.SafeModeAdministratorPassword)
+$ADDS.Promote($DC)

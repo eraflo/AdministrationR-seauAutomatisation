@@ -40,14 +40,38 @@ class NetworkAdapter {
         # Check PrefixLength is valid
         $this.CheckPrefixLength($Prefix)
 
-        New-NetIPAddress -IPAddress $IPAddress -PrefixLength $this.PrefixLength -DefaultGateway $DefaultGateway -InterfaceIndex (Get-NetAdapter -Name $this.Name).ifIndex
+        # Check if not the same IP address
+        if((Get-NetIPAddress -InterfaceIndex (Get-NetAdapter -Name $this.Name).ifIndex).IPAddress -eq $IPAddress) {
+            Write-Host "The IP address is already set. Please try again."
+            exit
+        }
+
+        try {
+            New-NetIPAddress -IPAddress $IPAddress -PrefixLength $this.PrefixLength -DefaultGateway $DefaultGateway -InterfaceIndex (Get-NetAdapter -Name $this.Name).ifIndex
+        }
+        catch {
+            Write-Host "An error occured while setting the IP address. Please try again."
+            exit
+        }
     }
 
     # Set DNS server
     [void]SetDNSServers([IPAddress[]]$DNSServers) {
         Write-Host "Setting DNS server of the network adapter..."
         
-        Set-DnsClientServerAddress -ServerAddresses $DNSServers -InterfaceIndex (Get-NetAdapter -Name $this.Name).ifIndex
+        # Check if not the same DNS server
+        if((Get-DnsClientServerAddress -InterfaceIndex (Get-NetAdapter -Name $this.Name).ifIndex).ServerAddresses -eq $DNSServers) {
+            Write-Host "The DNS server is already set. Please try again."
+            exit
+        }
+
+        try {
+            Set-DnsClientServerAddress -ServerAddresses $DNSServers -InterfaceIndex (Get-NetAdapter -Name $this.Name).ifIndex
+        }
+        catch {
+            Write-Host "An error occured while setting the DNS server. Please try again."
+            exit
+        }
     }
 
     hidden [bool]CheckPrefixLength([int]$PrefixLength) {

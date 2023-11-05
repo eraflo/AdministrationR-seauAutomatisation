@@ -118,14 +118,6 @@ class ADDS : Service {
             $SafeModeAdministratorPassword = ConvertTo-SecureString -String $SafeModeAdministratorPassword -AsPlainText -Force
         } while ($SafeModeAdministratorPassword -eq $null)
 
-        # Check if forest exists
-        if ($this.Forests -notcontains $DomainController.Forest) {
-            # Message of error
-            Write-Host "Error while promoting the server"
-            Write-Host "The forest $($DomainController.Forest) does not exist"
-            exit
-        }
-
         try {
             # Promote the server to a domain controller
             Install-ADDSDomainController -DomainName $DomainController.Domain -SiteName $DomainController.Site -ReplicationSourceDC $DomainController.ReplicationSourceDC -InstallDNS:$DomainController.InstallDNS -SafeModeAdministratorPassword $SafeModeAdministratorPassword -Force:$true -ErrorAction Stop

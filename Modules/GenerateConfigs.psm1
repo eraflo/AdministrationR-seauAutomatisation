@@ -1,12 +1,7 @@
 # Function to generate the JSON file for the AD configuration
 function GenerateADConfigFile ($ProjectRoot) {
-    # Generate a random id for the config file
-    $IdConfigFile = [System.Guid]::NewGuid().ToString()
 
-    # Take The 5 first characters of the id
-    $IdConfigFile = $IdConfigFile.Substring(0, 5)
-    $PathToGenerateJSON = $ProjectRoot + "\Resources\Config\config-ad-" + $IdConfigFile +".json"
-
+    # Generate the path to the JSON file
     $ResourcesPath = $ProjectRoot + "\Resources"
     $ConfigPath = $ResourcesPath + "\Config"
 
@@ -226,6 +221,9 @@ function GenerateADConfigFile ($ProjectRoot) {
         }
     }
 }'
+
+    $PathToGenerateJSON = $ProjectRoot + "\Resources\Config\config-ad-" + $CNArray[0]+"."+ $CNArray[1] +".json"
+
 
     $JSONContent | Out-File -FilePath $PathToGenerateJSON -Encoding ascii
 
