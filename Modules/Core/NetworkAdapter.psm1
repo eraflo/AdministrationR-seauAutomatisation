@@ -28,8 +28,8 @@ class NetworkAdapter {
             $this.DNSServers += $DNSServer
         }
 
-        $NetworkAdapter.SetIPAddress($NetworkAdapter.IPAddress, $NetworkAdapter.PrefixLength, $NetworkAdapter.DefaultGateway)
-        $NetworkAdapter.SetDNSServers($NetworkAdapter.DNSServers)
+        $this.SetIPAddress($this.IPAddress, $this.PrefixLength, $this.DefaultGateway)
+        $this.SetDNSServers($this.DNSServers)
     }
 
 
