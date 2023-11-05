@@ -57,6 +57,26 @@ class ADDS : Service {
         Restart-Computer -Force
     }
 
+    # Create a new domain
+    [void]CreateDomain($Name, $ParentDomain, $DomainMode, $Password) {
+        Write-Host "Creating a new domain..."
+        
+        # Secure the password if it is not already
+        if ($Password -isnot [securestring]) {
+            $Password = ConvertTo-SecureString -String $Password -AsPlainText -Force
+        }
+
+        # Create the new domain
+        Install-ADDSDomain -DomainName $Name -ParentDomainName $ParentDomain -DomainMode $DomainMode -SafeModeAdministratorPassword $Password -Force:$true
+
+        # Message of success
+        Write-Host "New domain created successfully"
+
+        # Restart the computer
+        Write-Host "Restarting the computer..."
+        Restart-Computer -Force
+    }
+
     # ----------------- Private functions -----------------
 
     # Implement the Install method
