@@ -1,4 +1,7 @@
-# Don't push the psd1 directory
-/Modules/psd1
+# Don't push log
+/logs/*
+
+
+
 
 
