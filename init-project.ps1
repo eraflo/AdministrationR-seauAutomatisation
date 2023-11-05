@@ -18,12 +18,6 @@ $RootPath = "$PSScriptRoot"
 # Place ourselves in the root of the project
 Set-Location -Path $RootPath
 
-# Path to the JSON file with the configuration for the modules
-$JSONPathConfig = "$PSScriptRoot\Resources\Config\config.json"
-
-# Import JSON file
-$JSONConfig = Get-Content -Path $JSONPathConfig | ConvertFrom-Json
-
 # Verify the path of the script to execute
 if ($ScriptToLaunchPath -notlike "$PSScriptRoot*") {
     $scriptPath = "$PSScriptRoot\src\$ScriptToLaunchPath"
