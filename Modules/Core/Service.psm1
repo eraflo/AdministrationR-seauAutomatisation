@@ -1,10 +1,15 @@
 # Abstract class for AD services
 class Service {
+    enum Statuts {
+        "Stopped" = 0,
+        "Running" = 1
+    }
+
     # public properties
     [string]$Name
     [string]$Description
     [string]$Path
-    [string]$Statut
+    [Statuts]static $Statut = [Statuts]::Stopped
 
 
     # As the abstract keyword is not available in PowerShell, we use a private constructor to prevent instantiation
