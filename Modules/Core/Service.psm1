@@ -1,10 +1,12 @@
+# Enum for service status
+enum Statuts {
+    Stopped = 0
+    Running = 1
+}
+
 # Abstract class for AD services
 class Service {
-    enum Statuts {
-        "Stopped" = 0,
-        "Running" = 1
-    }
-
+        
     # public properties
     [string]$Name
     [string]$Description
