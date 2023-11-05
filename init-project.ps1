@@ -14,10 +14,11 @@ if($version -eq $null -or $version -ne 7) {
         iex "& { $(irm https://aka.ms/install-powershell.ps1) } -UseMSI"
         
         # Restart the script with the new version of powershell
+        Write-Host "Restarting powershell..."
         Write-Host "You will need to rerun your script after the restart"
 
-        # Stop program
-        exit
+        # Restart program
+        Restart-Computer
     }
     catch {
         Write-Host "Error while updating powershell"
