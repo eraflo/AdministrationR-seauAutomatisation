@@ -6,6 +6,10 @@ using Module ./Modules/AD/DC.psm1
 class ADDS : Service {
 
     hidden [ADLDS]$AD_LDS
+    hidden [string]$DatabasePath = "C:\Windows\NTDS"
+    hidden [string]$LogPath = "C:\Windows\NTDS"
+    hidden [string]$SYSVOLPath = "C:\Windows\SYSVOL"
+
 
     # ----------------- Public properties -----------------
 
@@ -151,7 +155,7 @@ class ADDS : Service {
 
         try {
             # Create the new forest
-            Install-ADDSForest -DomainName $Name -DomainMode $DomainMode -ForestMode $ForestMode -SafeModeAdministratorPassword $Password -Force:$true -ErrorAction Stop
+            Install-ADDSForest -DomainName $Name -CreateDnsDelegation:$false -DatabasePath $DatabasePath  -DomainMode $DomainMode -ForestMode $ForestMode -LogPath $LogPath -SysvolPath $SYSVOLPath -SafeModeAdministratorPassword $Password -Force:$true -ErrorAction Stop
 
             # Add a new forest to the list
             $this.Forests += $Name

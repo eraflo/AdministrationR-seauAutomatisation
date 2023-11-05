@@ -57,14 +57,11 @@ function GenerateADConfigFile ($ProjectRoot) {
     # ----------------- Modes -----------------
 
     enum Mode {
-        Win2000 = 0
-        Win2003 = 1
-        Win2008 = 2
-        Win2008R2 = 3
-        Win2012 = 4
-        Win2012R2 = 5
-        Win2016 = 6
-        Win2019 = 7
+        Win2008 = 0
+        Win2008R2 = 1
+        Win2012 = 2
+        Win2012R2 = 3
+        Win2016 = 4
     }
 
     # Choose the forest mode
