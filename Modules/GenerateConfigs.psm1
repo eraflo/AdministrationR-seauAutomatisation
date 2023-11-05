@@ -10,23 +10,22 @@ function GenerateADConfigFile ($ProjectRoot) {
 
     # Write in the JSON file
     $JSONContent = '{
-        "Forest": 
-        {
-            "CN1": "",
-            "CN2": "",
-            "Description": "",
-            "SafeModeAdministratorPassword": "",
-            "ForestMode": "",
-            "DomainMode": "",
-            "DomainControllers": [
-                {
-                    "Name": "",
-                    "IPAddress": "",
-                    "OSVersion": ""
-                }
-            ]
-
-        }
-    }'
+    "Forest": 
+    {
+        "CN1": "",
+        "CN2": "",
+        "Description": "",
+        "SafeModeAdministratorPassword": "",
+        "ForestMode": "",
+        "DomainMode": "",
+        "DomainControllers": [
+            {
+                "Name": "",
+                "IPAddress": "",
+                "OSVersion": ""
+            }
+        ]
+    }
+}'
     $JSONContent | Out-File -FilePath $PathToGenerateJSON -Encoding ascii
 }

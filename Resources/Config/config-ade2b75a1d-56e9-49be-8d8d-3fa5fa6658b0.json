@@ -1,0 +1,18 @@
+{
+    "Forest": 
+    {
+        "CN1": "",
+        "CN2": "",
+        "Description": "",
+        "SafeModeAdministratorPassword": "",
+        "ForestMode": "",
+        "DomainMode": "",
+        "DomainControllers": [
+            {
+                "Name": "",
+                "IPAddress": "",
+                "OSVersion": ""
+            }
+        ]
+    }
+}

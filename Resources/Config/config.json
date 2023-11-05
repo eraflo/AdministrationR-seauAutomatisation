@@ -17,10 +17,10 @@
             ]
         },
         {
-            "Path": "\\Modules\\GenerateConfig",
+            "Path": "\\Modules\\",
             "Classes": [
                 {
-                    "Name": "GenerateAdConfig"
+                    "Name": "GenerateConfigs"
                 }
             ]
         }
