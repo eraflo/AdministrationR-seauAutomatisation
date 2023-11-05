@@ -3,6 +3,7 @@ class Service {
     # public properties
     [string]$Name
     [string]$Description
+    [string]$Path
     [string]$Statut
 
 
@@ -24,7 +25,12 @@ class Service {
     }
 
     [void]Restart() {
-        throw "Restart method not implemented"
+        throw "Must override Restart method"
+    }
+
+    # Install the service (private method)
+    hidden [void]Install() {
+        throw "Must override Install method"
     }
 }
 
