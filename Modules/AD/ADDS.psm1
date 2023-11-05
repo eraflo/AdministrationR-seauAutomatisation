@@ -13,6 +13,7 @@ class ADDS : Service {
         $this.Status = [Service.Statuts]::Stopped
 
         $this.Install()
+        Import-Module -Name ActiveDirectory
         $this.Start()
     }
 
