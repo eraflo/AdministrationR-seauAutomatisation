@@ -28,4 +28,10 @@ class DC {
             Install-WindowsFeature -Name DNS -IncludeManagementTools
         }
     }
+
+    # Rename the computer
+    [void]Rename() {
+        Write-Host "Renaming computer to $($this.Name)..."
+        Rename-Computer -NewName $this.Name -Force -Restart
+    }
 }
