@@ -8,7 +8,7 @@ param(
 $version = $Env:PSModulePath.Split(";")[2].Split("\")[3]
 
 # Update powershell
-if($version -eq $null || $version -ne 7) {
+if($version -eq $null -or $version -ne 7) {
     Write-Host "Updating powershell..."
     try {
         iex "& { $(irm https://aka.ms/install-powershell.ps1) } -UseMSI"
