@@ -1,7 +1,10 @@
 using Module ./Modules/Core/Service.psm1
+using Module ./Modules/AD/ADLDS.psm1
 
 # Class for Active Directory Domain Services
 class ADDS : Service {
+
+    hidden [ADLDS]AD_LDS
 
     # ----------------- Public functions -----------------
 
@@ -11,6 +14,8 @@ class ADDS : Service {
         $this.Description = "Active Directory Domain Services (ADDS) is a directory service from Microsoft that stores information about objects on a network and makes this information available to users and network administrators."
         $this.Path = "C:\Windows\System32\ntds.exe"
         [ADDS]::Statut = [Statuts]::Stopped
+
+        $this.AD_LDS = [ADLDS]::new()
 
         $this.Install()
         Import-Module -Name ActiveDirectory
