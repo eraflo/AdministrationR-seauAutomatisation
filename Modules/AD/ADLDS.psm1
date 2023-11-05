@@ -1,3 +1,6 @@
+using Module ./Modules/Core/Service.psm1
+
+
 # Class for AD LDS service
 class ADLDS : Service {
 
