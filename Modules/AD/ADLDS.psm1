@@ -14,28 +14,26 @@ class ADLDS : Service {
         [ADLDS]::Statut = [Statuts]::Stopped
 
         $this.Install()
-        Import-Module -Name ActiveDirectory
-        $this.Start()
     }
 
     # Implement the Start method
     [void]Start() {
         Write-Host "Starting Active Directory Lightweight Directory Services..."
-        Start-Service -Name "ADWS"
+        Start-Service -Name "ADLDS"
         [ADLDS]::Statut = [Statuts]::Running
     }
 
     # Implement the Stop method
     [void]Stop() {
         Write-Host "Stopping Active Directory Lightweight Directory Services..."
-        Stop-Service -Name "ADWS"
+        Stop-Service -Name "ADLDS"
         [ADLDS]::Statut = [Statuts]::Stopped
     }
 
     # Implement the Restart method
     [void]Restart() {
         Write-Host "Restarting Active Directory Lightweight Directory Services..."
-        Restart-Service -Name "ADWS"
+        Restart-Service -Name "ADLDS"
         [ADLDS]::Statut = [Statuts]::Running
     }
 

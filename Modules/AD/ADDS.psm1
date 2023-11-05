@@ -1,10 +1,12 @@
 using Module ./Modules/Core/Service.psm1
 using Module ./Modules/AD/ADLDS.psm1
+using Module ./Modules/AD/ADWS.psm1
 
 # Class for Active Directory Domain Services
 class ADDS : Service {
 
     hidden [ADLDS]$AD_LDS
+    hidden [ADWS]$AD_WS
 
     # ----------------- Public functions -----------------
 
@@ -15,6 +17,7 @@ class ADDS : Service {
         $this.Path = "C:\Windows\System32\ntds.exe"
         [ADDS]::Statut = [Statuts]::Stopped
 
+        $this.AD_WS = [ADWS]::new()
         $this.AD_LDS = [ADLDS]::new()
 
         $this.Install()
