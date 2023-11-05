@@ -31,8 +31,24 @@ else {
     $scriptPath = "$ScriptToLaunchPath"
 }
 
+# Generate a Log Directory
+$LogDirectory = "$RootPath\logs"
+if (-not (Test-Path -Path $LogDirectory)) {
+    New-Item -Path $LogDirectory -ItemType Directory
+}
+
+# Generate a log file for this script each day
+$LogFilePath = "$LogDirectory\$(Get-Date -Format 'yyyy-MM-dd')" + "_$(Split-Path -Path $scriptPath -Leaf).log"
+if(-not (Test-Path -Path $LogFilePath)) {
+    New-Item -Path $LogFilePath -ItemType File
+}
+
 # Execute the script
-& $scriptPath
+Write-Host "Executing the script $scriptPath"
+Write-Host "Log file: $LogFilePath"
+
+# Execute the script and redirect the output to the log file
+& $scriptPath 2>&1 | Tee-Object -FilePath $LogFilePath
 
 # Wait for the user to press a key
 Read-Host -Prompt "Press Enter to exit"
