@@ -13,7 +13,8 @@ $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
 $ADConfig = Get-Content -Path $PathToGenerateJSON | ConvertFrom-Json
 
 # Install the Active Directory Domain Services role
-[ADDS]::new()
+$ADDS = [ADDS]::new()
 
 # Create the new forest
-[ADDS]::CreateForest($ADConfig.Forest.CN1 + "." + $ADConfig.Forest.CN2, $ADConfig.Forest.DomainMode, $ADConfig.Forest.ForestMode, $ADConfig.Forest.SafeModeAdministratorPassword)
+$ADDS.CreateForest($ADConfig.Forest.CN1 + "." + $ADConfig.Forest.CN2, $ADConfig.Forest.DomainMode, $ADConfig.Forest.ForestMode, $ADConfig.Forest.SafeModeAdministratorPassword)
+

@@ -13,6 +13,7 @@ class ADDS : Service {
         $this.Status = "Stopped"
 
         $this.Install()
+        $this.Start()
     }
 
     # Implement the Start method
