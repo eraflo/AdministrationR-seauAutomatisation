@@ -4,6 +4,11 @@ function GenerateADConfigFile ($ProjectRoot) {
     $IdConfigFile = [System.Guid]::NewGuid().ToString()
     $PathToGenerateJSON = $ProjectRoot + "\Resources\Config\config-ad" + $IdConfigFile +".json"
 
+    # If the folder does not exist, create it
+    if (!(Test-Path $ProjectRoot + "\Resources\Config")) {
+        New-Item -Path $ProjectRoot + "\Resources\Config" -ItemType Directory
+    }
+
     # ----------------- CN -----------------
 
     # Choose the CN
