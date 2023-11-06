@@ -13,7 +13,7 @@ class DC {
     [NetworkAdapter[]]$NetworkAdapters
 
     # Constructor
-    DC([string]$Name, [string]$Site, [string]$Domain, [string]$Forest, [string]$OS, [bool]$InstallDNS, [NetworkAdapter[]]$NetworkAdapters) {
+    DC([string]$Name, [string]$Site, [string]$Domain, [string]$Forest, [string]$OS, [bool]$InstallDNS, [NetworkAdapter[]]$NetworkAdapters, [bool]$Do_Install = $true) {
         $this.Name = $Name
         $this.Site = $Site
         $this.Domain = $Domain
@@ -23,7 +23,7 @@ class DC {
         $this.NetworkAdapters = $NetworkAdapters
 
         # Install DNS Server role if needed
-        if ($this.InstallDNS) {
+        if ($this.InstallDNS -and $Do_Install) {
             Write-Host "Installing DNS Server role..."
             Install-WindowsFeature -Name DNS -IncludeManagementTools
         }
