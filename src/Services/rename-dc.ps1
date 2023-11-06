@@ -8,7 +8,7 @@ $PathToGenerateJSON += Read-Host -Prompt "Enter the name to the JSON file"
 # Read the JSON file
 $ADConfig = Get-Content -Path $PathToGenerateJSON | ConvertFrom-Json
 
-$NewName = Read-Prompt "Enter the new name for the domain controller"
+$NewName = Read-Host -Prompt "Enter the new name for the domain controller"
 
 # Update the JSON file
 $ADConfig.Forest.DomainController.Name = $NewName
