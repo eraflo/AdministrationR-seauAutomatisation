@@ -33,6 +33,9 @@ Get-Content -Path $PathToGenerateJSON | ForEach-Object {
 
 $Content = $Content.replace($ADConfig.Forest.DomainController.Name, $NewName)
 
+# Write the new content to the JSON file
+$Content | Out-File -FilePath $PathToGenerateJSON -Force
+
 # Create a new domain controller object
 $DC = [DC]::new($ADConfig.Forest.DomainController.Name, $ADConfig.Forest.DomainController.Site, $ADConfig.Forest.CN1 + "." + $ADConfig.Forest.CN2, $ADConfig.Forest.CN1 + "." + $ADConfig.Forest.CN2, $ADConfig.Forest.DomainController.OSVersion, $ADConfig.Forest.DomainController.InstallDNS, $Adapters, $false)
 
