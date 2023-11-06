@@ -2,7 +2,10 @@
 function GenerateADConfigFile ($ProjectRoot) {
     # Generate a random id for the config file
     $IdConfigFile = [System.Guid]::NewGuid().ToString()
-    $PathToGenerateJSON = $ProjectRoot + "\Resources\Config\config-ad" + $IdConfigFile +".json"
+
+    # Take The 5 first characters of the id
+    $IdConfigFile = $IdConfigFile.Substring(0, 5)
+    $PathToGenerateJSON = $ProjectRoot + "\Resources\Config\config-ad-" + $IdConfigFile +".json"
 
     $ResourcesPath = $ProjectRoot + "\Resources"
     $ConfigPath = $ResourcesPath + "\Config"
@@ -19,25 +22,18 @@ function GenerateADConfigFile ($ProjectRoot) {
     # ----------------- CN -----------------
 
     # Choose the CN
-    $CN = Read-Host -Prompt "Choose the CN (Example : test.local))"
+    $CNname = Read-Host -Prompt "Choose the CN (Example : test.local))"
 
     # Check if the CN is not empty
-    if ($CN -eq "") {
+    if ($CNname -eq "") {
         Write-Host "The CN cannot be empty. Please try again."
         GenerateADConfigFile $ProjectRoot
     }
 
     # Check if the CN is in the right format (CN1.CN2)
-    $CNArray = $CN.Split(".")
+    $CNArray = $CNname.Split(".")
     if ($CNArray.Length -ne 2) {
         Write-Host "The CN must be in the format CN1.CN2. Please try again."
-        GenerateADConfigFile $ProjectRoot
-    }
-
-    # Check if the CN is not already used
-    $CNAlreadyUsed = Get-ADForest | Where-Object {$_.Name -eq $CN}
-    if ($CNAlreadyUsed -ne $null) {
-        Write-Host "The CN is already used. Please try again."
         GenerateADConfigFile $ProjectRoot
     }
     
@@ -139,14 +135,24 @@ function GenerateADConfigFile ($ProjectRoot) {
     # ----------------- Network adapters -----------------
 
     # Ask the user to choose the network adapters
+    
+    # Display only the name of the network adapters
+    $NetAdapters = Get-NetAdapter | Select-Object -ExpandProperty Name
+    Write-Host "Network adapters : "
+    foreach ($NetAdapter in $NetAdapters) {
+        Write-Host $NetAdapter
+    }
+
+
     do {
         $NetworkAdapterName = Read-Host -Prompt "What's the name of the network adapter"
         $NetworkAdapter = Get-NetAdapter -Name $NetworkAdapterName
 
-        if ($NetworkAdapter -eq $null) {
-            Write-Host "The network adapter doesn't exist. Please try again."
+        # Check if the network adapter exists in the list of network adapters
+        if((Get-NetAdapter | Select-Object -ExpandProperty Name) -notcontains $NetworkAdapterName) {
+            Write-Host "The network adapter does not exist. Please try again."
         }
-    } while ($NetworkAdapter -eq $null)
+    } while ((Get-NetAdapter | Select-Object -ExpandProperty Name) -notcontains $NetworkAdapterName)
 
     # Ask the user to choose the IP address
     do {
@@ -203,7 +209,7 @@ function GenerateADConfigFile ($ProjectRoot) {
         "SafeModeAdministratorPassword": "'+$Password+'",
         "ForestMode": "'+$ForestMode+'",
         "DomainMode": "'+$DomainMode+'",
-        "DomainControllers": {
+        "DomainController": {
             "Name": "'+$DCName+'",
             "Site": "'+$DCSite+'",
             "OSVersion": "'+$DCOSVersion+'",

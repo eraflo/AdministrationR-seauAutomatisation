@@ -150,13 +150,12 @@ class ADDS : Service {
     }
 
     # Create a new forest
-    [void]CreateForest($Name, $DomainMode, $ForestMode, $Password) {
+    [void]CreateForest($Name, $DomainMode, $ForestMode, $ChiffredPassword) {
         Write-Host "Creating a new forest..."
         
-        # Secure the password if it is not already
-        if ($Password -isnot [securestring]) {
-            $Password = ConvertTo-SecureString -String $Password -AsPlainText -Force
-        }
+        # Transform a chiffred password in a secure string
+        $Password = ConvertTo-SecureString -String $ChiffredPassword
+
 
         try {
             # Create the new forest

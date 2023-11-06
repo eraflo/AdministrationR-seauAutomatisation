@@ -25,7 +25,7 @@ class NetworkAdapter {
         $this.PrefixLength = $PrefixLength
         $this.DefaultGateway = $DefaultGateway
         foreach($DNSServer in $DNSServers) {
-            $this.DNSServer += $DNSServer
+            $this.DNSServers += $DNSServer
         }
 
         $this.SetIPAddress($this.IPAddress, $this.PrefixLength, $this.DefaultGateway)
@@ -40,7 +40,7 @@ class NetworkAdapter {
         # Check PrefixLength is valid
         $this.CheckPrefixLength($Prefix)
 
-        New-NetIPAddress -InterfaceAlias $this.Name -IPAddress $IPAddress -PrefixLength $this.PrefixLength -DefaultGateway $DefaultGateway -InterfaceIndex (Get-NetAdapter -Name $this.Name).ifIndex
+        New-NetIPAddress -IPAddress $IPAddress -PrefixLength $this.PrefixLength -DefaultGateway $DefaultGateway -InterfaceIndex (Get-NetAdapter -Name $this.Name).ifIndex
     }
 
     # Set DNS server
