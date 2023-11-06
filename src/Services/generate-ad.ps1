@@ -1,5 +1,6 @@
 # Generation of Active Directory objects from JSON file
 using module ./Modules/AD/ADDS.psm1
+using module ./Modules/AD/DC.psm1
 using module ./Modules/GenerateConfigs.psm1
 using module ./Modules/Core/NetworkAdapter.psm1
 
@@ -37,4 +38,11 @@ $NetworkAdapterInfo = $ADConfig.Forest.DomainController.NetworkAdapter
 
 # Create the new forest
 $ADDS.CreateForest($ADConfig.Forest.CN1 + "." + $ADConfig.Forest.CN2, $ADConfig.Forest.DomainMode, $ADConfig.Forest.ForestMode, $ADConfig.Forest.SafeModeAdministratorPassword)
+
+# Create the new domain controller
+$DC = [DC]::new($ADConfig.Forest.DomainController.Name, $ADConfig.Forest.DomainController.Site, $ADConfig.Forest.CN1 + "." + $ADConfig.Forest.CN2, $ADConfig.Forest.CN1 + "." + $ADConfig.Forest.CN2, $ADConfig.Forest.DomainController.OSVersion, $ADConfig.Forest.DomainController.InstallDNS, $NetworkAdapterInfo)
+
+# Promote the server to a domain controller
+$ADDS.Promote($DC)
+
 

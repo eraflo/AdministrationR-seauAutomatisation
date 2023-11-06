@@ -166,10 +166,6 @@ class ADDS : Service {
 
             # Message of success
             Write-Host "New forest created successfully"
-
-            # Restart the computer
-            Write-Host "Restarting the computer..."
-            Restart-Computer -Force -ErrorAction Stop
         }
         catch {
             # Message of error
