@@ -37,7 +37,7 @@ $Content = $Content.replace($ADConfig.Forest.DomainController.Name, $NewName)
 $Content | Out-File -FilePath $PathToGenerateJSON -Force
 
 # Create a new domain controller object
-$DC = [DC]::new($ADConfig.Forest.DomainController.Name, $ADConfig.Forest.DomainController.Site, $ADConfig.Forest.CN1 + "." + $ADConfig.Forest.CN2, $ADConfig.Forest.CN1 + "." + $ADConfig.Forest.CN2, $ADConfig.Forest.DomainController.OSVersion, $ADConfig.Forest.DomainController.InstallDNS, $Adapters, $false)
+$DC = [DC]::new($NewName, $ADConfig.Forest.DomainController.Site, $ADConfig.Forest.CN1 + "." + $ADConfig.Forest.CN2, $ADConfig.Forest.CN1 + "." + $ADConfig.Forest.CN2, $ADConfig.Forest.DomainController.OSVersion, $ADConfig.Forest.DomainController.InstallDNS, $Adapters, $false)
 
 # Rename the domain controller
 $DC.Rename()
