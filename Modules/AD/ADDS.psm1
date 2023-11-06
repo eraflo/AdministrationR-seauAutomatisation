@@ -27,28 +27,54 @@ class ADDS : Service {
         $this.AD_LDS = [ADLDS]::new()
 
         $this.Install()
-        $this.Start()
     }
 
     # Implement the Start method
     [void]Start() {
-        Write-Host "Starting Active Directory Domain Services..."
-        Start-Service -Name "NTDS"
-        [ADDS]::Statut = [Statuts]::Running
+        try {
+            Write-Host "Starting Active Directory Domain Services..."
+            Start-Service -Name "NTDS"
+            [ADDS]::Statut = [Statuts]::Running
+        }
+        catch {
+            # Message of error
+            Write-Host "Error while starting Active Directory Domain Services"
+            Write-Host $_.Exception.Message
+            [ADDS]::Statut = [Statuts]::Stopped
+            exit
+        }
     }
 
     # Implement the Stop method
     [void]Stop() {
-        Write-Host "Stopping Active Directory Domain Services..."
-        Stop-Service -Name "NTDS"
-        [ADDS]::Statut = [Statuts]::Stopped
+        try {
+            Write-Host "Stopping Active Directory Domain Services..."
+            Stop-Service -Name "NTDS"
+            [ADDS]::Statut = [Statuts]::Stopped
+        }
+        catch {
+            # Message of error
+            Write-Host "Error while stopping Active Directory Domain Services"
+            Write-Host $_.Exception.Message
+            [ADDS]::Statut = [Statuts]::Running
+            exit
+        }
     }
 
     # Implement the Restart method
     [void]Restart() {
-        Write-Host "Restarting Active Directory Domain Services..."
-        Restart-Service -Name "NTDS"
-        [ADDS]::Statut = [Statuts]::Running
+        try {
+            Write-Host "Restarting Active Directory Domain Services..."
+            Restart-Service -Name "NTDS"
+            [ADDS]::Statut = [Statuts]::Running
+        }
+        catch {
+            # Message of error
+            Write-Host "Error while restarting Active Directory Domain Services"
+            Write-Host $_.Exception.Message
+            [ADDS]::Statut = [Statuts]::Stopped
+            exit
+        }
     }
 
     # Promote a server to a domain controller
