@@ -206,4 +206,10 @@ function GenerateADConfigFile ($ProjectRoot) {
 }')
 
     $JSONContent | Out-File -FilePath $PathToGenerateJSON -Encoding ascii
+
+    # Message of success
+    Write-Host "JSON file for AD configuration created successfully at : $PathToGenerateJSON"
+
+    # Return the path to the JSON file
+    return $PathToGenerateJSON
 }

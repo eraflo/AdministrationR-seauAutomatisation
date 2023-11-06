@@ -7,7 +7,7 @@ $ADDS = [ADDS]::new()
 
 
 # Generate the JSON file for the AD configuration
-GenerateADConfigFile($RootPath)
+$PathToGenerateJSON = GenerateADConfigFile($RootPath)
 
 # Wait for the user to fill the JSON file
 Write-Host "Please see if the JSON file is filled correctly at : $PathToGenerateJSON"
