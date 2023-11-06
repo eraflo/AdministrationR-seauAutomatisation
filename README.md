@@ -25,3 +25,15 @@ And, to import your module, you need to use :
 ```
 using Module <path_from_root_dir_to_file>
 ```
+
+## Modules files
+
+- __GenerateConfig.psm1__ : file to put function permitting the generation of a config file. Actually, there is 1 function to generate a forest config file (with 1 domain controller only)
+- __ADDS.psm1, ADLDS.psm1, DC.psm1__ : files with class representing exactly what their names imply. Just the beginning, can be strenghten later on.
+- __Service.psm1__ : file with an abstract class for all service-oriented classes we create to inherit
+- __NetworkAdapter.psm1__ : file with a class representing a network adapter
+
+## SRC files 
+
+- __generate-ad.ps1 and generate-config.ps1__ : you need to launch first __generate-config.ps1__ to create a json with the configuration for your forest (and 1 domain controller). Then, you can execute __generate-ad.ps1__ and when asked, give the name of the json file with the config you generated
+- __promote-dc.ps1__ : you also need to have a json config file for a forest generated and give his name when asked. This one is for promoting a domain controller in an existing forest / domain
