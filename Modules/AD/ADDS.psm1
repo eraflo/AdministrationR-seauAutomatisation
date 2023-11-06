@@ -1,10 +1,19 @@
 using Module ./Modules/Core/Service.psm1
 using Module ./Modules/AD/ADLDS.psm1
+using Module ./Modules/AD/DC.psm1
 
 # Class for Active Directory Domain Services
 class ADDS : Service {
 
     hidden [ADLDS]$AD_LDS
+
+    # ----------------- Public properties -----------------
+
+    # List of domain controllers
+    [DC[]]$DCs
+
+    # List of forests
+    [string[]]$Forests
 
     # ----------------- Public functions -----------------
 
@@ -18,7 +27,6 @@ class ADDS : Service {
         $this.AD_LDS = [ADLDS]::new()
 
         $this.Install()
-        #Import-Module -Name ActiveDirectory
         $this.Start()
     }
 
@@ -43,6 +51,53 @@ class ADDS : Service {
         [ADDS]::Statut = [Statuts]::Running
     }
 
+    # Promote a server to a domain controller
+    [void]Promote($Name, [string]$Forest, $Domain, $Password, $Site, $ReplicationSourceDC, $InstallDNS, $DomainMode, $ForestMode) {
+        Write-Host "Promoting a server to a domain controller..."
+
+        # Secure the password if it is not already
+        if ($Password -isnot [securestring]) {
+            $Password = ConvertTo-SecureString -String $Password -AsPlainText -Force
+        }
+
+        # Check if forest exists
+        if ($this.Forests -notcontains $Forest) {
+            # Message of error
+            Write-Host "Error while promoting the server"
+            Write-Host "The forest $Forest does not exist"
+            exit
+        }
+
+        # Check if the domain controller already exists
+        if ($this.DCs -contains $Name) {
+            # Message of error
+            Write-Host "Error while promoting the server"
+            Write-Host "The domain controller $Name already exists"
+            exit
+        }
+
+        try {
+            # Promote the server to a domain controller
+            Install-ADDSDomainController -DomainName $Domain -Credential (Get-Credential -UserName $Domain -Message "Enter the credentials of the domain administrator") -SiteName $Site -ReplicationSourceDC $ReplicationSourceDC -InstallDNS:$InstallDNS -SafeModeAdministratorPassword $Password -Force:$true -ErrorAction Stop
+
+            # Message of success
+            Write-Host "Server promoted successfully"
+
+            # Add a new domain controller to the list
+            $this.DCs += [DC]::new($Name, $Site, $Domain, $Forest, (Get-ADDomainController -Identity $Name).OSVersion)
+
+            # Restart the computer
+            Write-Host "Restarting the computer..."
+            Restart-Computer -Force -ErrorAction Stop
+        }
+        catch {
+            # Message of error
+            Write-Host "Error while promoting the server"
+            Write-Host $_.Exception.Message
+            exit
+        }
+    }
+
     # Create a new forest
     [void]CreateForest($Name, $DomainMode, $ForestMode, $Password) {
         Write-Host "Creating a new forest..."
@@ -52,15 +107,22 @@ class ADDS : Service {
             $Password = ConvertTo-SecureString -String $Password -AsPlainText -Force
         }
 
-        # Create the new forest
-        Install-ADDSForest -DomainName $Name -DomainMode $DomainMode -ForestMode $ForestMode -SafeModeAdministratorPassword $Password -Force:$true
+        try {
+            # Create the new forest
+            Install-ADDSForest -DomainName $Name -DomainMode $DomainMode -ForestMode $ForestMode -SafeModeAdministratorPassword $Password -Force:$true -ErrorAction Stop
 
-        # Message of success
-        Write-Host "New forest created successfully"
+            # Add a new forest to the list
+            $this.Forests += $Name
 
-        # Restart the computer
-        Write-Host "Restarting the computer..."
-        Restart-Computer -Force
+            # Message of success
+            Write-Host "New forest created successfully"
+        }
+        catch {
+            # Message of error
+            Write-Host "Error while creating a new forest"
+            Write-Host $_.Exception.Message
+            exit
+        }
     }
 
     # Create a new domain
@@ -72,15 +134,19 @@ class ADDS : Service {
             $Password = ConvertTo-SecureString -String $Password -AsPlainText -Force
         }
 
-        # Create the new domain
-        Install-ADDSDomain -DomainName $Name -ParentDomainName $ParentDomain -DomainMode $DomainMode -SafeModeAdministratorPassword $Password -Force:$true
+        try {
+            # Create the new domain
+            Install-ADDSDomain -DomainName $Name -ParentDomainName $ParentDomain -DomainMode $DomainMode -SafeModeAdministratorPassword $Password -Force:$true -ErrorAction Stop
 
-        # Message of success
-        Write-Host "New domain created successfully"
-
-        # Restart the computer
-        Write-Host "Restarting the computer..."
-        Restart-Computer -Force
+            # Message of success
+            Write-Host "New domain created successfully"
+        }
+        catch {
+            # Message of error
+            Write-Host "Error while creating a new domain"
+            Write-Host $_.Exception.Message
+            exit
+        }
     }
 
     # ----------------- Private functions -----------------
@@ -92,15 +158,19 @@ class ADDS : Service {
         # Check if the ADDS role is installed
         $ADDSRole = Get-WindowsFeature -Name "AD-Domain-Services"
         if ($ADDSRole.Installed -eq $false) {
-            # Install the ADDS role
-            Install-WindowsFeature -Name "AD-Domain-Services" -IncludeManagementTools
+            try {
+                # Install the ADDS role
+                Install-WindowsFeature -Name "AD-Domain-Services" -IncludeManagementTools -ErrorAction Stop
 
-            # Message of success
-            Write-Host "Active Directory Domain Services installed successfully"
-
-            # Restart the computer
-            Write-Host "Restarting the computer..."
-            Restart-Computer -Force
+                # Message of success
+                Write-Host "Active Directory Domain Services installed successfully"
+            }
+            catch {
+                # Message of error
+                Write-Host "Error while installing Active Directory Domain Services"
+                Write-Host $_.Exception.Message
+                exit
+            }
         }
         else {
             # Message to inform that the ADDS role is already installed

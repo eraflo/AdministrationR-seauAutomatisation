@@ -12,6 +12,11 @@ if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
     Break
 }
 
+# Install the module for AD powershell cmdlets
+if(-not (Get-Module -ListAvailable -Name ActiveDirectory)) {
+    Write-Host "Installing the module for AD powershell cmdlets..."
+    Install-WindowsFeature -Name RSAT-AD-PowerShell -IncludeAllSubFeature
+}
 # Root of the project
 $RootPath = "$PSScriptRoot"
 
