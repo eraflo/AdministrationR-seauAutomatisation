@@ -7,8 +7,6 @@
 - __src__ : put your files with actual functionality you want to implement. You can use your modules in there.
 - __Tests__ : if you want to implement some tests
 
-Don't touch Modules/psd1. It is generated automatically.
-
 
 ## Exec
 
@@ -22,11 +20,6 @@ Also, you can just do __CRT+MAJ+B__ and select "Launch A Script". Then, you can 
 
 You create a file in the Modules directory (in one of the existing directories in it or in a new). The extension for a module is __.psm1__.    
 You create your class.  
-In the __"Resources/Config/config.json"__, you need to indicate your class in __'ModulePaths'__ :
-- In __Path__, you give the path from the root to the directory of you module with the class.
-- In __Classes__, you add an object with the name of the file (without the extension).
-
-If you add a class in an existing repository, you can just add an object in the Path corresponding.
 
 And, to import your project, you need to use :
 ```
