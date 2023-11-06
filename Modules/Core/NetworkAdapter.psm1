@@ -7,10 +7,10 @@ class NetworkAdapter {
     [IPAddress]$IPAddress
     [int]$PrefixLength = 24
     [IPAddress]$DefaultGateway
-    [IPAdress[]]$DNSServers
+    [IPAddress[]]$DNSServers
 
     # Constructor
-    NetworkAdapter([string]$Name, [IPAdress]$IPAddress, [int]$PrefixLength, [IPAdress]$DefaultGateway, [IPAdress[]]$DNSServer) {
+    NetworkAdapter([string]$Name, [IPAddress]$IPAddress, [int]$PrefixLength, [IPAddress]$DefaultGateway, [IPAddress[]]$DNSServers) {
         # Verify the network adapter exists
         if((Get-NetAdapter -Name $Name).Name -eq $null) {
             Write-Host "The network adapter $Name doesn't exist. Please try again."
@@ -34,7 +34,7 @@ class NetworkAdapter {
 
 
     # Set IP address
-    [void]SetIPAddress([IPAdress]$IPAddress, [int]$Prefix, [IPAdress]$DefaultGateway) {
+    [void]SetIPAddress([IPAddress]$IPAddress, [int]$Prefix, [IPAddress]$DefaultGateway) {
         Write-Host "Setting IP address of the network adapter..."
 
         # Check PrefixLength is valid
@@ -44,7 +44,7 @@ class NetworkAdapter {
     }
 
     # Set DNS server
-    [void]SetDNSServers([IPAdress[]]$DNSServers) {
+    [void]SetDNSServers([IPAddress[]]$DNSServers) {
         Write-Host "Setting DNS server of the network adapter..."
         
         Set-DnsClientServerAddress -ServerAddresses $DNSServers -InterfaceIndex (Get-NetAdapter -Name $this.Name).ifIndex

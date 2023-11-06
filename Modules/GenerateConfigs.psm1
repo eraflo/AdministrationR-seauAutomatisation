@@ -35,11 +35,11 @@ function GenerateADConfigFile ($ProjectRoot) {
     }
 
     # Check if the CN is not already used
-    # $CNAlreadyUsed = Get-ADForest | Where-Object {$_.Name -eq $CN}
-    # if ($CNAlreadyUsed -ne $null) {
-    #     Write-Host "The CN is already used. Please try again."
-    #     GenerateADConfigFile $ProjectRoot
-    # }
+    $CNAlreadyUsed = Get-ADForest | Where-Object {$_.Name -eq $CN}
+    if ($CNAlreadyUsed -ne $null) {
+        Write-Host "The CN is already used. Please try again."
+        GenerateADConfigFile $ProjectRoot
+    }
     
     # ----------------- Description -----------------
 

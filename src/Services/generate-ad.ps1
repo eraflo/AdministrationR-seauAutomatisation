@@ -19,7 +19,7 @@ $ADConfig = Get-Content -Path $PathToGenerateJSON | ConvertFrom-Json
 
 # Network adapter info from the JSON file
 $NetworkAdapterInfo = $ADConfig.NetworkAdapter
-$DNSServers = [$NetworkAdapterInfo.DNSServer]
+[IPAddress[]]$DNSServers += $NetworkAdapterInfo.DNSServer
 
 # Change the network adapter configuration
 [IPAddress]$NetworkAdapterIP::new($NetworkAdapterInfo.Name, $NetworkAdapterInfo.IP, $NetworkAdapterInfo.PrefixLength, $NetworkAdapterInfo.DefaultGateway, $DNSServers)

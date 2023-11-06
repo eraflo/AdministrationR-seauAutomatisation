@@ -8,6 +8,7 @@ class DC {
     [string]$Domain
     [string]$Forest
     [string]$OS
+    [string]$SafeModeAdministratorPassword
     [NetworkAdapter[]]$NetworkAdapters
 
     # Constructor

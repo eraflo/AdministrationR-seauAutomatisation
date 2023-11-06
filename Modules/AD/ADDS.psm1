@@ -83,46 +83,59 @@ class ADDS : Service {
         Write-Host "Promoting a server to a domain controller..."
 
         # Check if the domain controller exists
-        if ($this.DCs -notcontains $DC) {
+        if ($this.DCs -contains $DC) {
             # Message of error
             Write-Host "Error while promoting the server"
-            Write-Host "The domain controller $DC does not exist"
+            Write-Host "The domain controller $($DC.Name) already exists"
             exit
         }
 
         # Get the domain controller
         $DomainController = $this.DCs | Where-Object { $_.Name -eq $DC }
 
-        # Secure the password if it is not already
-        if ($Password -isnot [securestring]) {
-            $Password = ConvertTo-SecureString -String $Password -AsPlainText -Force
-        }
+        $SafeModeAdministratorPassword = $null
+
+        # Ask for the SafeModeAdministratorPassword
+        do {
+            $SafeModeAdministratorPassword = Read-Host -Prompt "What's the SafeModeAdministratorPassword" -AsSecureString
+            
+            # Check if not null
+            if ($SafeModeAdministratorPassword -eq $null) {
+                Write-Host "The SafeModeAdministratorPassword is not valid. Please try again."
+            }
+            
+            # Confirmation of the password
+            $Confirm = Read-Host -Prompt "Confirm the SafeModeAdministratorPassword" -AsSecureString
+
+            # Check if the passwords are the same by converting them to plain text
+            $SafeModeAdministratorPassword = ConvertFrom-SecureString -SecureString $SafeModeAdministratorPassword
+            $Confirm = ConvertFrom-SecureString -SecureString $Confirm
+
+            if($SafeModeAdministratorPassword -ne $Confirm) {
+                Write-Host "The passwords are not the same. Please try again."
+            }
+
+            $SafeModeAdministratorPassword = ConvertTo-SecureString -String $SafeModeAdministratorPassword -AsPlainText -Force
+        } while ($SafeModeAdministratorPassword -eq $null)
 
         # Check if forest exists
-        if ($this.Forests -notcontains $Forest) {
+        if ($this.Forests -notcontains $DomainController.Forest) {
             # Message of error
             Write-Host "Error while promoting the server"
-            Write-Host "The forest $Forest does not exist"
-            exit
-        }
-
-        # Check if the domain controller already exists
-        if ($this.DCs -contains $Name) {
-            # Message of error
-            Write-Host "Error while promoting the server"
-            Write-Host "The domain controller $Name already exists"
+            Write-Host "The forest $($DomainController.Forest) does not exist"
             exit
         }
 
         try {
             # Promote the server to a domain controller
-            Install-ADDSDomainController -DomainName $Domain -Credential (Get-Credential -UserName $Domain -Message "Enter the credentials of the domain administrator") -SiteName $Site -ReplicationSourceDC $ReplicationSourceDC -InstallDNS:$InstallDNS -SafeModeAdministratorPassword $Password -Force:$true -ErrorAction Stop
+            Install-ADDSDomainController -DomainName $DomainController.Domain -SiteName $DomainController.Site -ReplicationSourceDC $DomainController.ReplicationSourceDC -InstallDNS:$DomainController.InstallDNS -SafeModeAdministratorPassword $SafeModeAdministratorPassword -Force:$true -ErrorAction Stop
 
             # Message of success
             Write-Host "Server promoted successfully"
 
             # Add a new domain controller to the list
-            $this.DCs += [DC]::new($Name, $Site, $Domain, $Forest, (Get-ADDomainController -Identity $Name).OSVersion)
+            $DC.SafeModeAdministratorPassword = $SafeModeAdministratorPassword.ToString()
+            $this.DCs += $DC
 
             # Restart the computer
             Write-Host "Restarting the computer..."
