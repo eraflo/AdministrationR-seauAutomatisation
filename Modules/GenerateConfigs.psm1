@@ -118,13 +118,13 @@ function GenerateADConfigFile ($ProjectRoot) {
         Write-Host "$install_dns : $([int][InstallDNS]$install_dns)"
     }
 
-    do {
-        $DCInstallDNS = Read-Host -Prompt "Choose if the domain controller will install DNS"
+    $DCInstallDNS = 0
 
-        if ($DCInstallDNS -lt 0 -or $DCInstallDNS -gt 1) {
-            Write-Host "The value must be 0 or 1. Please try again."
-        }
-    } while ($DCInstallDNS -lt 0 -or $DCInstallDNS -gt 1)
+    $DCInstallDNSTemp = Read-Host -Prompt "Choose if the domain controller will install DNS (default: 0)"
+
+    if($DCInstallDNSTemp -eq 0 -or $DCInstallDNSTemp -eq 1) {
+        $DCInstallDNS = $DCInstallDNSTemp
+    }
 
     # Convert the value to boolean
     $DCInstallDNS = [bool]$DCInstallDNS
@@ -146,13 +146,14 @@ function GenerateADConfigFile ($ProjectRoot) {
 
     do {
         $NetworkAdapterName = Read-Host -Prompt "What's the name of the network adapter"
-        $NetworkAdapter = Get-NetAdapter -Name $NetworkAdapterName
-
+        
         # Check if the network adapter exists in the list of network adapters
-        if((Get-NetAdapter | Select-Object -ExpandProperty Name) -notcontains $NetworkAdapterName) {
+        if($NetAdapters -notcontains $NetworkAdapterName) {
             Write-Host "The network adapter does not exist. Please try again."
+        } else {
+            $NetworkAdapter = Get-NetAdapter -Name $NetworkAdapterName
         }
-    } while ((Get-NetAdapter | Select-Object -ExpandProperty Name) -notcontains $NetworkAdapterName)
+    } while ($NetAdapters -notcontains $NetworkAdapterName)
 
     # Ask the user to choose the IP address
     do {
