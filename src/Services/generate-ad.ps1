@@ -17,10 +17,13 @@ $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
 # Read the JSON file
 $ADConfig = Get-Content -Path $PathToGenerateJSON | ConvertFrom-Json
 
+# Network adapter info from the JSON file
+$NetworkAdapterInfo = $ADConfig.NetworkAdapter
+$DNSServers = [$NetworkAdapterInfo.DNSServer]
+
+# Change the network adapter configuration
+[IPAddress]$NetworkAdapterIP::new($NetworkAdapterInfo.Name, $NetworkAdapterInfo.IP, $NetworkAdapterInfo.PrefixLength, $NetworkAdapterInfo.DefaultGateway, $DNSServers)
+
 # Create the new forest
 $ADDS.CreateForest($ADConfig.Forest.CN1 + "." + $ADConfig.Forest.CN2, $ADConfig.Forest.DomainMode, $ADConfig.Forest.ForestMode, $ADConfig.Forest.SafeModeAdministratorPassword)
 
-# Promote the server as a domain controller
-foreach($DC in $ADConfig.Forest.DomainControllers) {
-    $ADDS.Promote($DC.Name, $ADConfig.Forest.CN1 + "." + $ADConfig.Forest.CN2, $ADConfig.Forest.CN1 + "." + $ADConfig.Forest.CN2, $ADConfig.Forest.SafeModeAdministratorPassword, $DC.Site, $DC.ReplicationSourceDC, $DC.InstallDNS, $ADConfig.Forest.DomainMode, $ADConfig.Forest.ForestMode)
-}

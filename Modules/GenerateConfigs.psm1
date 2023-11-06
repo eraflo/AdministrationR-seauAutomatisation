@@ -101,70 +101,92 @@ function GenerateADConfigFile ($ProjectRoot) {
     Write-Host "The domain mode is $([Mode]$DomainMode)"
 
     # ----------------- Domain Controller -----------------
-    do {
-        $nb_dc = Read-Host -Prompt "How many domain controllers do you want to create ?"
-        
-        if ($nb_dc -lt 1) {
-            Write-Host "You must create at least one domain controller. Please try again."
-        }
-    } while ($nb_dc -lt 1)
-    
-
+  
     # List to store the domain controllers informations
-    $DCList = @()
 
-    for($i = 0; $i -lt $nb_dc; $i++) {
-        # Choose the name of the domain controller
-        $DCName = Read-Host -Prompt "What's the name of the domain controller"
+    $DCName = hostname.exe
+    
+    # Choose the site of the domain controller
+    $DCSite = Read-Host -Prompt "What's the site of the domain controller"
 
-        # Choose the site of the domain controller
-        $DCSite = Read-Host -Prompt "What's the site of the domain controller"
+    # Choose the OS version of the domain controller
+    $DCOSVersion = Read-Host -Prompt "What's the OS version of the domain controller"
 
-        # Choose the IP address of the domain controller
-        $DCIPAddress = Read-Host -Prompt "What's the IP address of the domain controller"
-
-        # Choose the OS version of the domain controller
-        $DCOSVersion = Read-Host -Prompt "What's the OS version of the domain controller"
-
-        # Choose if the domain controller will install DNS
-        enum InstallDNS {
-            Yes = 0
-            No = 1
-        }
-
-        foreach ($install_dns in [InstallDNS]::GetNames([InstallDNS])) {
-            Write-Host "$install_dns : $([int][InstallDNS]$install_dns)"
-        }
-
-        do {
-            $DCInstallDNS = Read-Host -Prompt "Choose if the domain controller will install DNS"
-
-            if ($DCInstallDNS -lt 0 -or $DCInstallDNS -gt 1) {
-                Write-Host "The value must be 0 or 1. Please try again."
-            }
-        } while ($DCInstallDNS -lt 0 -or $DCInstallDNS -gt 1)
-
-        # Choose the replication source domain controller
-        if($nb_dc -gt 1) {
-            do {
-                $DCReplicationSourceDC = Read-Host -Prompt "What's the replication source domain controller"
-            } while ($DCReplicationSourceDC -eq "" -or $DCList -notcontains $DCReplicationSourceDC)
-        }
-        else {
-            $DCReplicationSourceDC = $DCName
-        }
-
-        # Add the domain controller to the list
-        $DCList += [PSCustomObject]@{
-            Name = $DCName
-            Site = $DCSite
-            IPAddress = $DCIPAddress
-            OSVersion = $DCOSVersion
-            InstallDNS = $DCInstallDNS
-            ReplicationSourceDC = $DCReplicationSourceDC
-        }
+    # Choose if the domain controller will install DNS
+    enum InstallDNS {
+        No = 0
+        Yes = 1
     }
 
+    foreach ($install_dns in [InstallDNS]::GetNames([InstallDNS])) {
+        Write-Host "$install_dns : $([int][InstallDNS]$install_dns)"
+    }
+
+    do {
+        $DCInstallDNS = Read-Host -Prompt "Choose if the domain controller will install DNS"
+
+        if ($DCInstallDNS -lt 0 -or $DCInstallDNS -gt 1) {
+            Write-Host "The value must be 0 or 1. Please try again."
+        }
+    } while ($DCInstallDNS -lt 0 -or $DCInstallDNS -gt 1)
+
+    # Convert the value to boolean
+    $DCInstallDNS = [bool]$DCInstallDNS
+
+    # Replication source domain controller
+    $DCReplicationSourceDC = $DCName
+
+    # ----------------- Network adapters -----------------
+
+    # Ask the user to choose the network adapters
+    do {
+        $NetworkAdapterName = Read-Host -Prompt "What's the name of the network adapter"
+        $NetworkAdapter = Get-NetAdapter -Name $NetworkAdapterName
+
+        if ($NetworkAdapter -eq $null) {
+            Write-Host "The network adapter doesn't exist. Please try again."
+        }
+    } while ($NetworkAdapter -eq $null)
+
+    # Ask the user to choose the IP address
+    do {
+        $NetworkAdapterIP = Read-Host -Prompt "What's the IP address of the network adapter"
+        $NetworkAdapterIP = [IPAddress]$NetworkAdapterIP
+
+        if ($NetworkAdapterIP -eq $null) {
+            Write-Host "The IP address is not valid. Please try again."
+        }
+    } while ($NetworkAdapterIP -eq $null)
+
+    # Ask the user to choose the prefix length
+    do {
+        $NetworkAdapterPrefixLength = Read-Host -Prompt "What's the prefix length of the network adapter"
+        $NetworkAdapterPrefixLength = [int]$NetworkAdapterPrefixLength
+
+        if ($NetworkAdapterPrefixLength -lt 0 -or $NetworkAdapterPrefixLength -gt 32) {
+            Write-Host "The prefix length must be between 0 and 32. Please try again."
+        }
+    } while ($NetworkAdapterPrefixLength -lt 0 -or $NetworkAdapterPrefixLength -gt 32)
+
+    # Ask the user to choose the default gateway
+    do {
+        $NetworkAdapterDefaultGateway = Read-Host -Prompt "What's the default gateway of the network adapter"
+        $NetworkAdapterDefaultGateway = [IPAddress]$NetworkAdapterDefaultGateway
+
+        if ($NetworkAdapterDefaultGateway -eq $null) {
+            Write-Host "The default gateway is not valid. Please try again."
+        }
+    } while ($NetworkAdapterDefaultGateway -eq $null)
+
+    # Ask the user to choose the DNS server
+    do {
+        $NetworkAdapterDNSServer = Read-Host -Prompt "What's the DNS server of the network adapter"
+        $NetworkAdapterDNSServer = [IPAddress]$NetworkAdapterDNSServer
+
+        if ($NetworkAdapterDNSServer -eq $null) {
+            Write-Host "The DNS server is not valid. Please try again."
+        }
+    } while ($NetworkAdapterDNSServer -eq $null)
 
     # ----------------- JSON file -----------------
 
@@ -181,29 +203,22 @@ function GenerateADConfigFile ($ProjectRoot) {
         "SafeModeAdministratorPassword": "'+$Password+'",
         "ForestMode": "'+$ForestMode+'",
         "DomainMode": "'+$DomainMode+'",
-        "DomainControllers": ['
-            
-
-
-    # Add the domain controllers to the JSON file
-    foreach ($DC in $DCList) {
-        $JSONContent = $JSONContent.Insert($JSONContent.Length, '{
-            "Name": "'+$DC.Name+'",
-            "Site": "'+$DC.Site+'",
-            "IPAddress": "'+$DC.IPAddress+'",
-            "OSVersion": "'+$DC.OSVersion+'",
-            "InstallDNS": "'+$DC.InstallDNS+'",
-            "ReplicationSourceDC": "'+$DC.ReplicationSourceDC+'"
-        },')
+        "DomainControllers": {
+            "Name": "'+$DCName+'",
+            "Site": "'+$DCSite+'",
+            "OSVersion": "'+$DCOSVersion+'",
+            "InstallDNS": "'+$DCInstallDNS+'",
+            "ReplicationSourceDC": "'+$DCReplicationSourceDC+'",
+            "NetworkAdapter": {
+                "Name": "'+$NetworkAdapterName+'",
+                "IPAddress": "'+$NetworkAdapterIP+'",
+                "PrefixLength": "'+$NetworkAdapterPrefixLength+'",
+                "DefaultGateway": "'+$NetworkAdapterDefaultGateway+'",
+                "DNSServer": "'+$NetworkAdapterDNSServer+'"
+            } 
+        }
     }
-
-    # Remove the last comma
-    $JSONContent = $JSONContent.Remove($JSONContent.Length - 1, 1)
-
-    # Add the end of the JSON file
-    $JSONContent = $JSONContent.Insert($JSONContent.Length, ']
-    }
-}')
+}'
 
     $JSONContent | Out-File -FilePath $PathToGenerateJSON -Encoding ascii
 

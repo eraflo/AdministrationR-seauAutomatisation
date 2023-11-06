@@ -15,6 +15,7 @@ class ADDS : Service {
     # List of forests
     [string[]]$Forests
 
+
     # ----------------- Public functions -----------------
 
     # Implement the constructor
@@ -78,8 +79,19 @@ class ADDS : Service {
     }
 
     # Promote a server to a domain controller
-    [void]Promote($Name, [string]$Forest, $Domain, $Password, $Site, $ReplicationSourceDC, $InstallDNS, $DomainMode, $ForestMode) {
+    [void]Promote([DC]$DC) {
         Write-Host "Promoting a server to a domain controller..."
+
+        # Check if the domain controller exists
+        if ($this.DCs -notcontains $DC) {
+            # Message of error
+            Write-Host "Error while promoting the server"
+            Write-Host "The domain controller $DC does not exist"
+            exit
+        }
+
+        # Get the domain controller
+        $DomainController = $this.DCs | Where-Object { $_.Name -eq $DC }
 
         # Secure the password if it is not already
         if ($Password -isnot [securestring]) {
@@ -142,6 +154,10 @@ class ADDS : Service {
 
             # Message of success
             Write-Host "New forest created successfully"
+
+            # Restart the computer
+            Write-Host "Restarting the computer..."
+            Restart-Computer -Force -ErrorAction Stop
         }
         catch {
             # Message of error
