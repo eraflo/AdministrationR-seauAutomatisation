@@ -15,7 +15,7 @@ $ADConfig = Get-Content -Path $PathToGenerateJSON | ConvertFrom-Json
 
 
 # Network adapter info from the JSON file
-$NetworkAdapterInfo = $ADConfig.Forest.DomainController.NetworkAdapter
+$NetworkAdapterInfo = $ADConfig.Forest.DomainController.NetAdapter
 
 
 [IPAddress[]]$DNSServers += $NetworkAdapterInfo.DNSServer

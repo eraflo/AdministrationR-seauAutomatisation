@@ -216,7 +216,7 @@ function GenerateADConfigFile ($ProjectRoot) {
             "OSVersion": "'+$DCOSVersion+'",
             "InstallDNS": "'+$DCInstallDNS+'",
             "ReplicationSourceDC": "'+$DCReplicationSourceDC+'",
-            "NetworkAdapter": {
+            "NetAdapter": {
                 "Name": "'+$NetworkAdapterName+'",
                 "IPAddress": "'+$NetworkAdapterIP+'",
                 "PrefixLength": "'+$NetworkAdapterPrefixLength+'",
