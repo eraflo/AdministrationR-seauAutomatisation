@@ -3,8 +3,22 @@ using module ./Modules/Core/NetworkAdapter.psm1
 
 # Path to the JSON file
 $PathToGenerateJSON = $RootPath + "\Resources\Config\"
-$PathToGenerateJSON += Read-Host -Prompt "Enter the name to the JSON file"
 
+do {
+    $PathToGenerateJSON += Read-Host -Prompt "Enter the name to the JSON file"
+
+    # Add the extension if it is not present
+    if (-not $PathToGenerateJSON.EndsWith(".json")) {
+        $PathToGenerateJSON += ".json"
+    }
+
+    # Check if the file exists
+    if (-not (Test-Path -Path $PathToGenerateJSON)) {
+        Write-Host -Object "The file $PathToGenerateJSON does not exist"
+    }
+} while (-not (Test-Path -Path $PathToGenerateJSON))
+
+# Get the JSON data
 $ADConfig = Get-Content -Path $PathToGenerateJSON | ConvertFrom-Json
 
 $NewName = Read-Host -Prompt "Enter the new name for the domain controller"
