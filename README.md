@@ -21,7 +21,7 @@ Also, you can just do __CRT+MAJ+B__ and select "Launch A Script". Then, you can 
 You create a file in the Modules directory (in one of the existing directories in it or in a new). The extension for a module is __.psm1__.    
 You create your class.  
 
-And, to import your project, you need to use :
+And, to import your module, you need to use :
 ```
 using Module <path_from_root_dir_to_file>
 ```
