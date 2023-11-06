@@ -32,6 +32,13 @@ class DC {
     # Rename the computer
     [void]Rename() {
         Write-Host "Renaming computer to $($this.Name)..."
-        Rename-Computer -NewName $this.Name -Force -Restart
+        try {
+            Rename-Computer -NewName $this.Name -Force -Restart
+        }
+        catch {
+            Write-Host "Failed to rename computer to $($this.Name)"
+            Write-Host $_.Exception.Message
+            exit 1
+        }
     }
 }
