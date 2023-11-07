@@ -1,0 +1,25 @@
+{
+    "Forest": 
+    {
+        "CN1": "test",
+        "CN2": "local",
+        "Description": "test",
+        "SafeModeAdministratorPassword": "01000000d08c9ddf0115d1118c7a00c04fc297eb010000007c1b3fb57557304bb5d99c8a4d1ce3fd0000000002000000000003660000c000000010000000c4eaee32ab2a036099af71dad3000a2b0000000004800000a0000000100000002489017a9b69de512dcd0f50929006e4180000001cc20eac89d2132d39ade51a6f033a71769e7a1bbf37aac614000000bd040b9b3fc8a868c24a29427f7339b9ffb621f6",
+        "ForestMode": "3",
+        "DomainMode": "3",
+        "DomainController": {
+            "Name": "WIN-VGMUHSO4516",
+            "Site": "principal",
+            "OSVersion": "WindowsServer2019",
+            "InstallDNS": "True",
+            "ReplicationSourceDC": "WIN-VGMUHSO4516",
+            "NetAdapter": {
+                "Name": "Ethernet",
+                "IPAddress": "192.168.0.2",
+                "PrefixLength": "24",
+                "DefaultGateway": "192.168.0.1",
+                "DNSServer": "127.0.0.1"
+            } 
+        }
+    }
+}
