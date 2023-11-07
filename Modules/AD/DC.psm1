@@ -20,7 +20,7 @@ class DC : Server {
 
         # Install DNS Server role if needed
         if ($this.InstallDNS -and $Do_Install) {
-            Write-Host "Installing DNS Server role..."
+            Write-HostAndLog "Installing DNS Server role..."
             Install-WindowsFeature -Name DNS -IncludeManagementTools
         }
     }
@@ -36,8 +36,16 @@ class DC : Server {
 
         # Install DNS Server role if needed
         if ($this.InstallDNS) {
-            Write-Host "Installing DNS Server role..."
-            Install-WindowsFeature -Name DNS -IncludeManagementTools
+            Write-HostAndLog "Installing DNS Server role..."
+            try {
+                Install-WindowsFeature -Name DNS -IncludeManagementTools
+                Write-HostAndLog "DNS Server role installed"
+            }
+            catch {
+                Write-HostAndLog "Error while installing DNS Server role"
+                Write-HostAndLog $_.Exception.Message
+                exit
+            }
         }
     }
 }

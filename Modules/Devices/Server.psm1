@@ -27,14 +27,14 @@ class Server {
 
     # Add the server to the domain
     [void]AddToDomain($Domain) {
-        Write-Host "Adding server to domain $($Domain)..."
+        Write-HostAndLog "Adding server to domain $($Domain)..."
         try {
             $this.Domain = $Domain
             Add-Computer -DomainName $this.Domain -Credential $this.Domain\Administrator -Restart
         }
         catch {
-            Write-Host "Failed to add server to domain $($Domain)"
-            Write-Host $_.Exception.Message
+            Write-HostAndLog "Failed to add server to domain $($Domain)"
+            Write-HostAndLog $_.Exception.Message
             exit 1
         }
     }
@@ -44,14 +44,14 @@ class Server {
     [bool]Rename() {
         $restart = $false
 
-        Write-Host "Renaming server to $($this.Name)..."
+        Write-HostAndLog "Renaming server to $($this.Name)..."
         try {
             Rename-Computer -NewName $this.Name -Force
             $restart = $true
         }
         catch {
-            Write-Host "Failed to rename server to $($this.Name)"
-            Write-Host $_.Exception.Message
+            Write-HostAndLog "Failed to rename server to $($this.Name)"
+            Write-HostAndLog $_.Exception.Message
             exit 1
         }
         return $restart

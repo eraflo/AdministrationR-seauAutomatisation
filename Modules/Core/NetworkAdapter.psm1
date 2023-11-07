@@ -15,7 +15,7 @@ class NetworkAdapter {
     NetworkAdapter([string]$Name, [IPAddress]$IPAddress, [int]$PrefixLength, [IPAddress]$DefaultGateway, [IPAddress[]]$DNSServers) {
         # Verify the network adapter exists
         if((Get-NetAdapter -Name $Name).Name -eq $null) {
-            Write-Host "The network adapter $Name doesn't exist. Please try again."
+            Write-HostAndLog "The network adapter $Name doesn't exist. Please try again."
             exit
         }
 
@@ -38,7 +38,7 @@ class NetworkAdapter {
     NetworkAdapter([string]$Name) {
         # Verify the network adapter exists
         if((Get-NetAdapter -Name $Name).Name -eq $null) {
-            Write-Host "The network adapter $Name doesn't exist. Please try again."
+            Write-HostAndLog "The network adapter $Name doesn't exist. Please try again."
             exit
         }
 
@@ -60,14 +60,14 @@ class NetworkAdapter {
 
     # Set IP address
     [void]SetIPAddress([IPAddress]$IPAddress, [int]$Prefix, [IPAddress]$DefaultGateway) {
-        Write-Host "Setting IP address of the network adapter..."
+        Write-HostAndLog "Setting IP address of the network adapter..."
 
         # Check PrefixLength is valid
         $this.CheckPrefixLength($Prefix)
 
         # Check if not the same IP address
         if((Get-NetIPAddress -InterfaceIndex (Get-NetAdapter -Name $this.Name).ifIndex).IPAddress -eq $IPAddress) {
-            Write-Host "The IP address is already set."
+            Write-HostAndLog "The IP address is already set."
             return
         }
 
@@ -75,18 +75,18 @@ class NetworkAdapter {
             New-NetIPAddress -IPAddress $IPAddress -PrefixLength $this.PrefixLength -DefaultGateway $DefaultGateway -InterfaceIndex (Get-NetAdapter -Name $this.Name).ifIndex
         }
         catch {
-            Write-Host "An error occured while setting the IP address. Please try again."
+            Write-HostAndLog "An error occured while setting the IP address. Please try again."
             exit
         }
     }
 
     # Set DNS server
     [void]SetDNSServers([IPAddress[]]$DNSServers) {
-        Write-Host "Setting DNS server of the network adapter..."
+        Write-HostAndLog "Setting DNS server of the network adapter..."
         
         # Check if not the same DNS server
         if((Get-DnsClientServerAddress -InterfaceIndex (Get-NetAdapter -Name $this.Name).ifIndex).ServerAddresses -eq $DNSServers) {
-            Write-Host "The DNS server is already set. Please try again."
+            Write-HostAndLog "The DNS server is already set. Please try again."
             return
         }
 
@@ -94,14 +94,14 @@ class NetworkAdapter {
             Set-DnsClientServerAddress -ServerAddresses $DNSServers -InterfaceIndex (Get-NetAdapter -Name $this.Name).ifIndex
         }
         catch {
-            Write-Host "An error occured while setting the DNS server. Please try again."
+            Write-HostAndLog "An error occured while setting the DNS server. Please try again."
             exit
         }
     }
 
     hidden [bool]CheckPrefixLength([int]$PrefixLength) {
         if($PrefixLength -lt 0 -or $PrefixLength -gt 32) {
-            Write-Host "The PrefixLength must be between 0 and 32. Please try again."
+            Write-HostAndLog "The PrefixLength must be between 0 and 32. Please try again."
             return $false
         }
         else {

@@ -37,14 +37,14 @@ class ADDS : Service {
     # Implement the Start method
     [void]Start() {
         try {
-            Write-Host "Starting Active Directory Domain Services..."
+            Write-HostAndLog "Starting Active Directory Domain Services..."
             Start-Service -Name "NTDS"
             [ADDS]::Statut = [Statuts]::Running
         }
         catch {
             # Message of error
-            Write-Host "Error while starting Active Directory Domain Services"
-            Write-Host $_.Exception.Message
+            Write-HostAndLog "Error while starting Active Directory Domain Services"
+            Write-HostAndLog $_.Exception.Message
             [ADDS]::Statut = [Statuts]::Stopped
             exit
         }
@@ -53,14 +53,14 @@ class ADDS : Service {
     # Implement the Stop method
     [void]Stop() {
         try {
-            Write-Host "Stopping Active Directory Domain Services..."
+            Write-HostAndLog "Stopping Active Directory Domain Services..."
             Stop-Service -Name "NTDS"
             [ADDS]::Statut = [Statuts]::Stopped
         }
         catch {
             # Message of error
-            Write-Host "Error while stopping Active Directory Domain Services"
-            Write-Host $_.Exception.Message
+            Write-HostAndLog "Error while stopping Active Directory Domain Services"
+            Write-HostAndLog $_.Exception.Message
             [ADDS]::Statut = [Statuts]::Running
             exit
         }
@@ -69,14 +69,14 @@ class ADDS : Service {
     # Implement the Restart method
     [void]Restart() {
         try {
-            Write-Host "Restarting Active Directory Domain Services..."
+            Write-HostAndLog "Restarting Active Directory Domain Services..."
             Restart-Service -Name "NTDS"
             [ADDS]::Statut = [Statuts]::Running
         }
         catch {
             # Message of error
-            Write-Host "Error while restarting Active Directory Domain Services"
-            Write-Host $_.Exception.Message
+            Write-HostAndLog "Error while restarting Active Directory Domain Services"
+            Write-HostAndLog $_.Exception.Message
             [ADDS]::Statut = [Statuts]::Stopped
             exit
         }
@@ -84,13 +84,13 @@ class ADDS : Service {
 
     # Promote a server to a domain controller
     [void]Promote([DC]$DC) {
-        Write-Host "Promoting a server to a domain controller..."
+        Write-HostAndLog "Promoting a server to a domain controller..."
 
         # Check if the domain controller exists
         if ($this.DCs -contains $DC) {
             # Message of error
-            Write-Host "Error while promoting the server"
-            Write-Host "The domain controller $($DC.Name) already exists"
+            Write-HostAndLog "Error while promoting the server"
+            Write-HostAndLog "The domain controller $($DC.Name) already exists"
             exit
         }
 
@@ -105,7 +105,7 @@ class ADDS : Service {
             
             # Check if not null
             if ($SafeModeAdministratorPassword -eq $null) {
-                Write-Host "The SafeModeAdministratorPassword is not valid. Please try again."
+                Write-HostAndLog "The SafeModeAdministratorPassword is not valid. Please try again."
             }
             
             # Confirmation of the password
@@ -116,7 +116,7 @@ class ADDS : Service {
             $Confirm = ConvertFrom-SecureString -SecureString $Confirm
 
             if($SafeModeAdministratorPassword -ne $Confirm) {
-                Write-Host "The passwords are not the same. Please try again."
+                Write-HostAndLog "The passwords are not the same. Please try again."
             }
 
             $SafeModeAdministratorPassword = ConvertTo-SecureString -String $SafeModeAdministratorPassword -AsPlainText -Force
@@ -127,27 +127,27 @@ class ADDS : Service {
             Install-ADDSDomainController -DomainName $DomainController.Domain -SiteName $DomainController.Site -ReplicationSourceDC $DomainController.ReplicationSourceDC -InstallDNS:$DomainController.InstallDNS -SafeModeAdministratorPassword $SafeModeAdministratorPassword -Force:$true -ErrorAction Stop
 
             # Message of success
-            Write-Host "Server promoted successfully"
+            Write-HostAndLog "Server promoted successfully"
 
             # Add a new domain controller to the list
             $DC.SafeModeAdministratorPassword = $SafeModeAdministratorPassword.ToString()
             $this.DCs += $DC
 
             # Restart the computer
-            Write-Host "Restarting the computer..."
+            Write-HostAndLog "Restarting the computer..."
             Restart-Computer -Force -ErrorAction Stop
         }
         catch {
             # Message of error
-            Write-Host "Error while promoting the server"
-            Write-Host $_.Exception.Message
+            Write-HostAndLog "Error while promoting the server"
+            Write-HostAndLog $_.Exception.Message
             exit
         }
     }
 
     # Create a new forest
     [void]CreateForest($Name, $DomainMode, $ForestMode, $ChiffredPassword) {
-        Write-Host "Creating a new forest..."
+        Write-HostAndLog "Creating a new forest..."
         
         # Transform a chiffred password in a secure string
         $Password = ConvertTo-SecureString -String $ChiffredPassword
@@ -161,19 +161,19 @@ class ADDS : Service {
             $this.Forests += $Name
 
             # Message of success
-            Write-Host "New forest created successfully"
+            Write-HostAndLog "New forest created successfully"
         }
         catch {
             # Message of error
-            Write-Host "Error while creating a new forest"
-            Write-Host $_.Exception.Message
+            Write-HostAndLog "Error while creating a new forest"
+            Write-HostAndLog $_.Exception.Message
             exit
         }
     }
 
     # Create a new domain
     [void]CreateDomain($Name, $ParentDomain, $DomainMode, $Password) {
-        Write-Host "Creating a new domain..."
+        Write-HostAndLog "Creating a new domain..."
         
         # Secure the password if it is not already
         if ($Password -isnot [securestring]) {
@@ -185,12 +185,12 @@ class ADDS : Service {
             Install-ADDSDomain -DomainName $Name -ParentDomainName $ParentDomain -DomainMode $DomainMode -SafeModeAdministratorPassword $Password -Force:$true -ErrorAction Stop
 
             # Message of success
-            Write-Host "New domain created successfully"
+            Write-HostAndLog "New domain created successfully"
         }
         catch {
             # Message of error
-            Write-Host "Error while creating a new domain"
-            Write-Host $_.Exception.Message
+            Write-HostAndLog "Error while creating a new domain"
+            Write-HostAndLog $_.Exception.Message
             exit
         }
     }
@@ -199,7 +199,7 @@ class ADDS : Service {
 
     # Implement the Install method
     hidden [void]Install() {
-        Write-Host "Installing Active Directory Domain Services..."
+        Write-HostAndLog "Installing Active Directory Domain Services..."
         
         # Check if the ADDS role is installed
         $ADDSRole = Get-WindowsFeature -Name "AD-Domain-Services"
@@ -209,18 +209,18 @@ class ADDS : Service {
                 Install-WindowsFeature -Name "AD-Domain-Services" -IncludeManagementTools -ErrorAction Stop
 
                 # Message of success
-                Write-Host "Active Directory Domain Services installed successfully"
+                Write-HostAndLog "Active Directory Domain Services installed successfully"
             }
             catch {
                 # Message of error
-                Write-Host "Error while installing Active Directory Domain Services"
-                Write-Host $_.Exception.Message
+                Write-HostAndLog "Error while installing Active Directory Domain Services"
+                Write-HostAndLog $_.Exception.Message
                 exit
             }
         }
         else {
             # Message to inform that the ADDS role is already installed
-            Write-Host "Active Directory Domain Services is already installed"
+            Write-HostAndLog "Active Directory Domain Services is already installed"
         }
 
     }

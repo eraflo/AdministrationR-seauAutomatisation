@@ -1,7 +1,9 @@
+using module ./Modules/WriteHostAndLog.psm1
 param(
     [Parameter(Mandatory=$true)]
     [string]$ScriptToLaunchPath
 )
+
 
 # Use the console in administrator mode
 if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
@@ -18,7 +20,7 @@ if(-not (Get-Module -ListAvailable -Name ActiveDirectory)) {
     Install-WindowsFeature -Name RSAT-AD-PowerShell -IncludeAllSubFeature
 }
 # Root of the project
-$RootPath = "$PSScriptRoot"
+$global:RootPath = "$PSScriptRoot"
 
 # Place ourselves in the root of the project
 Set-Location -Path $RootPath
@@ -38,29 +40,26 @@ if (-not (Test-Path -Path $LogDirectory)) {
 }
 
 # Generate a log file for this script each day
-$LogFilePath = "$LogDirectory\$(Get-Date -Format 'yyyy-MM-dd')" + "_$($(Split-Path -Path $scriptPath -Leaf).Replace('.ps1','')).log"
+$global:LogFilePath = "$LogDirectory\$(Get-Date -Format 'yyyy-MM-dd')" + "_$($(Split-Path -Path $scriptPath -Leaf).Replace('.ps1','')).log"
 if(-not (Test-Path -Path $LogFilePath)) {
     New-Item -Path $LogFilePath -ItemType File
 }
 
 # Restart variable to know if we need to restart the computer
-$restart = $false
+$global:restart = $false
 
 # Execute the script
 Write-Host "Executing the script $scriptPath"
 Write-Host "Log file: $LogFilePath"
 
 # Execute the script and redirect the output to the log file
-& $scriptPath 2>&1 | Tee-Object -FilePath $LogFilePath
+& $scriptPath 
 
-# Wait for the user to press a key
-Read-Host -Prompt "Press Enter to exit"
 
 # Restart the computer if needed
 if ($restart) {
     Write-Host "Restarting the computer..."
     Restart-Computer
 }
-
 
 
