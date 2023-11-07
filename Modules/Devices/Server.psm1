@@ -47,6 +47,7 @@ class Server {
         Write-HostAndLog "Renaming server to $($this.Name)..."
         try {
             Rename-Computer -NewName $this.Name -Force
+            Write-HostAndLog "Server renamed successfully"
             $restart = $true
         }
         catch {
