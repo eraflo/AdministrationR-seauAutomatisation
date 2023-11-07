@@ -155,7 +155,7 @@ class ADDS : Service {
 
         try {
             # Create the new forest
-            Install-ADDSForest -DomainName $Name -CreateDnsDelegation:$false -DatabasePath $DatabasePath  -DomainMode $DomainMode -ForestMode $ForestMode -LogPath $LogPath -SysvolPath $SYSVOLPath -SafeModeAdministratorPassword $Password -Force:$true -ErrorAction Stop
+            Install-ADDSForest -DomainName $Name -CreateDnsDelegation:$false -DatabasePath $this.DatabasePath -DomainMode $DomainMode -ForestMode $ForestMode -LogPath $this.LogPath -SysvolPath $this.SYSVOLPath -SafeModeAdministratorPassword $Password -Force:$true -ErrorAction Stop
 
             # Add a new forest to the list
             $this.Forests += $Name
