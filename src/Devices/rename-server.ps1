@@ -11,4 +11,4 @@ $Server.Name = $NewName
 
 
 # Rename the domain controller
-$Server.Rename()
+$restart = $Server.Rename()

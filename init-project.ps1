@@ -38,10 +38,13 @@ if (-not (Test-Path -Path $LogDirectory)) {
 }
 
 # Generate a log file for this script each day
-$LogFilePath = "$LogDirectory\$(Get-Date -Format 'yyyy-MM-dd')" + "_$(Split-Path -Path $scriptPath -Leaf).log"
+$LogFilePath = "$LogDirectory\$(Get-Date -Format 'yyyy-MM-dd')" + "_$($(Split-Path -Path $scriptPath -Leaf).Replace('.ps1','')).log"
 if(-not (Test-Path -Path $LogFilePath)) {
     New-Item -Path $LogFilePath -ItemType File
 }
+
+# Restart variable to know if we need to restart the computer
+$restart = $false
 
 # Execute the script
 Write-Host "Executing the script $scriptPath"
@@ -52,5 +55,12 @@ Write-Host "Log file: $LogFilePath"
 
 # Wait for the user to press a key
 Read-Host -Prompt "Press Enter to exit"
+
+# Restart the computer if needed
+if ($restart) {
+    Write-Host "Restarting the computer..."
+    Restart-Computer
+}
+
 
 

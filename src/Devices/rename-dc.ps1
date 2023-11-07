@@ -40,4 +40,4 @@ $Content | Out-File -FilePath $PathToGenerateJSON -Force
 $DC = [DC]::new($NewName, $ADConfig.Forest.DomainController.Site, $ADConfig.Forest.CN1 + "." + $ADConfig.Forest.CN2, $ADConfig.Forest.CN1 + "." + $ADConfig.Forest.CN2, $ADConfig.Forest.DomainController.OSVersion, $ADConfig.Forest.DomainController.InstallDNS, $Adapters, $false)
 
 # Rename the domain controller
-$DC.Rename()
+$restart = $DC.Rename()

@@ -40,17 +40,21 @@ class Server {
     }
 
 
-    # Rename the computer
-    [void]Rename() {
+    # Rename the computer (Return true if need to restart)
+    [bool]Rename() {
+        $restart = $false
+
         Write-Host "Renaming server to $($this.Name)..."
         try {
-            Rename-Computer -NewName $this.Name -Force -Restart
+            Rename-Computer -NewName $this.Name -Force
+            $restart = $true
         }
         catch {
             Write-Host "Failed to rename server to $($this.Name)"
             Write-Host $_.Exception.Message
             exit 1
         }
+        return $restart
     }
 
 }
