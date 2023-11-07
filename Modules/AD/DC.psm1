@@ -1,16 +1,12 @@
 using module ./Modules/Core/NetworkAdapter.psm1
+using module ./Modules/Devices/Server.psm1
 
 # Class to represent a domain controller
-class DC {
+class DC : Server {
     # Public properties
-    [string]$Name
     [string]$Site
-    [string]$Domain
-    [string]$Forest
-    [string]$OS
     [string]$SafeModeAdministratorPassword
     [bool]$InstallDNS
-    [NetworkAdapter[]]$NetworkAdapters
 
     # Constructors
     DC([string]$Name, [string]$Site, [string]$Domain, [string]$Forest, [string]$OS, [bool]$InstallDNS, [NetworkAdapter[]]$NetworkAdapters, [bool]$Do_Install = $true) {
@@ -42,19 +38,6 @@ class DC {
         if ($this.InstallDNS) {
             Write-Host "Installing DNS Server role..."
             Install-WindowsFeature -Name DNS -IncludeManagementTools
-        }
-    }
-
-    # Rename the computer
-    [void]Rename() {
-        Write-Host "Renaming computer to $($this.Name)..."
-        try {
-            Rename-Computer -NewName $this.Name -Force -Restart
-        }
-        catch {
-            Write-Host "Failed to rename computer to $($this.Name)"
-            Write-Host $_.Exception.Message
-            exit 1
         }
     }
 }

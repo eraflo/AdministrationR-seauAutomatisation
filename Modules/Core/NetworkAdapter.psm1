@@ -10,6 +10,8 @@ class NetworkAdapter {
     [IPAddress[]]$DNSServers
 
     # Constructor
+
+    # Static IP
     NetworkAdapter([string]$Name, [IPAddress]$IPAddress, [int]$PrefixLength, [IPAddress]$DefaultGateway, [IPAddress[]]$DNSServers) {
         # Verify the network adapter exists
         if((Get-NetAdapter -Name $Name).Name -eq $null) {
@@ -32,6 +34,29 @@ class NetworkAdapter {
         $this.SetDNSServers($this.DNSServers)
     }
 
+    
+    NetworkAdapter([string]$Name) {
+        # Verify the network adapter exists
+        if((Get-NetAdapter -Name $Name).Name -eq $null) {
+            Write-Host "The network adapter $Name doesn't exist. Please try again."
+            exit
+        }
+
+        $this.Name = $Name
+        
+        # Retrieve the network adapter configuration with the name
+
+        # IPv4
+        $this.IPAddress = (Get-NetIPAddress -InterfaceIndex (Get-NetAdapter -Name $this.Name).ifIndex).IPAddress[1]
+        $this.PrefixLength = (Get-NetIPAddress -InterfaceIndex (Get-NetAdapter -Name $this.Name).ifIndex).PrefixLength[0]
+        $this.DefaultGateway = (Get-NetIPAddress -InterfaceIndex (Get-NetAdapter -Name $this.Name).ifIndex).DefaultGateway[0]
+
+        # Retrieve the DNS servers
+        foreach($DNSServer in (Get-DnsClientServerAddress -InterfaceIndex (Get-NetAdapter -Name $this.Name).ifIndex).ServerAddresses) {
+            $this.DNSServers += $DNSServer
+        }
+    }
+
 
     # Set IP address
     [void]SetIPAddress([IPAddress]$IPAddress, [int]$Prefix, [IPAddress]$DefaultGateway) {
@@ -42,8 +67,8 @@ class NetworkAdapter {
 
         # Check if not the same IP address
         if((Get-NetIPAddress -InterfaceIndex (Get-NetAdapter -Name $this.Name).ifIndex).IPAddress -eq $IPAddress) {
-            Write-Host "The IP address is already set. Please try again."
-            exit
+            Write-Host "The IP address is already set."
+            return
         }
 
         try {
@@ -62,7 +87,7 @@ class NetworkAdapter {
         # Check if not the same DNS server
         if((Get-DnsClientServerAddress -InterfaceIndex (Get-NetAdapter -Name $this.Name).ifIndex).ServerAddresses -eq $DNSServers) {
             Write-Host "The DNS server is already set. Please try again."
-            exit
+            return
         }
 
         try {
