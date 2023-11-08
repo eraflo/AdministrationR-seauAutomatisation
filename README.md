@@ -45,3 +45,6 @@ Actually, there is :
 - __$global:RootPath__ : the root path of the project
 - __$global:restart__ : use to indicate if you want to restart the device at the end of the script's execution
 - __$global:LogFilePath__ : the path to the log file of the script which is executed
+
+## Write-HostAndLog
+Function permitting to write something in the console and in the file log of the executed script. You can use it in all your script, even module, because it is import directly in the entry point of the project.
