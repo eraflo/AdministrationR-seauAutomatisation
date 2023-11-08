@@ -37,3 +37,11 @@ using Module <path_from_root_dir_to_file>
 
 - __generate-ad.ps1 and generate-config.ps1__ : you need to launch first __generate-config.ps1__ to create a json with the configuration for your forest (and 1 domain controller). Then, you can execute __generate-ad.ps1__ and when asked, give the name of the json file with the config you generated
 - __promote-dc.ps1__ : you also need to have a json config file for a forest generated and give his name when asked. This one is for promoting a domain controller in an existing forest / domain
+
+## Global Variables
+There is some variable usable in all the project (even module). You call them like that : __$global:variable_name__
+
+Actually, there is :
+- __$global:RootPath__ : the root path of the project
+- __$global:restart__ : use to indicate if you want to restart the device at the end of the script's execution
+- __$global:LogFilePath__ : the path to the log file of the script which is executed
