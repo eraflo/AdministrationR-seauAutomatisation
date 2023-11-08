@@ -32,3 +32,11 @@ And, to import your project, you need to use :
 ```
 using Module <path_from_root_dir_to_file>
 ```
+
+## Global Variables
+There is some variable usable in all the project (even module). You call them like that : __$global:variable_name__
+
+Actually, there is :
+- __$global:RootPath__ : the root path of the project
+- __$global:restart__ : use to indicate if you want to restart the device at the end of the script's execution
+- __$global:LogFilePath__ : the path to the log file of the script which is executed
