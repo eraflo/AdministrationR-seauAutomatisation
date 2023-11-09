@@ -230,3 +230,58 @@ function GenerateADConfigFile ($ProjectRoot) {
     # Return the path to the JSON file
     return $PathToGenerateJSON
 }
+
+# Generate csv file for adding users
+function GenerateCSVUsers($ProjectRoot) {
+    # Generate the path to the CSV file
+    $ResourcesPath = $ProjectRoot + "\Resources"
+    $ConfigPath = $ResourcesPath + "\Data"
+
+    # Check if folders exist
+    if((Test-Path $ResourcesPath) -eq $false) {
+        New-Item -ItemType Directory -Path $ResourcesPath
+    }
+
+    if((Test-Path $ConfigPath) -eq $false) {
+        New-Item -ItemType Directory -Path $ConfigPath
+    }
+
+    # Choose the number of users to create
+    $NumberOfUsers = Read-Host -Prompt "Choose the number of users to create"
+
+    # Check if the number of users is not empty
+    if ($NumberOfUsers -eq "") {
+        Write-Host "The number of users cannot be empty. Please try again."
+        GenerateCSVUsers
+    }
+
+    # Check if the number of users is a number
+    if ($NumberOfUsers -notmatch "^[0-9]+$") {
+        Write-Host "The number of users must be a number. Please try again."
+        GenerateCSVUsers
+    }
+
+    # Check the number of csv file already created
+    $CSVFiles = Get-ChildItem -Path $ConfigPath -Filter "users-*.csv"
+    $CSVFilesCount = $CSVFiles.Count
+
+    # Generate the name of the CSV file
+    $CSVFileName = "users-" + $CSVFilesCount + ".csv"
+
+    # Generate the path to the CSV file
+    $PathToGenerateCSV = $ConfigPath + "\" + $CSVFileName
+
+    # Create the CSV file
+    Write-Host "Creating CSV file for users at : $PathToGenerateCSV"
+
+    # Write in the CSV file
+    $CSVContent = 'FirstName;LastName;Fonction'
+
+    # Generate n ligne empty
+    for ($i = 0; $i -lt $NumberOfUsers; $i++) {
+        $CSVContent += "`n;;"
+    }
+
+    
+    $CSVContent | Out-File -FilePath $PathToGenerateCSV -Encoding ascii
+}
