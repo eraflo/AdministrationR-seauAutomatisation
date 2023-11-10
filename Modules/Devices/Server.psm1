@@ -1,4 +1,4 @@
-using module ./Modules/Core/NetworkAdapter.psm1
+using module ../Core/NetworkAdapter.psm1
 
 # Class representing a server
 class Server {

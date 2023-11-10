@@ -1,5 +1,5 @@
-using Module ./Modules/Core/Service.psm1
-using Module ./Modules/Devices/Server.psm1
+using Module ../Core/Service.psm1
+using Module ../Devices/Server.psm1
 
 # Class for DHCP service
 class DHCP : Service {

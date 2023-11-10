@@ -1,5 +1,5 @@
-using module ./Modules/Core/NetworkAdapter.psm1
-using module ./Modules/Devices/Server.psm1
+using module ../Core/NetworkAdapter.psm1
+using module ../Devices/Server.psm1
 
 # Class to represent a domain controller
 class DC : Server {

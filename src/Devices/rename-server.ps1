@@ -1,5 +1,5 @@
-using module ./Modules/Devices/Server.psm1
-using module ./Modules/Core/NetworkAdapter.psm1
+using module ../../Modules/Devices/Server.psm1
+using module ../../Modules/Core/NetworkAdapter.psm1
 
 $NewName = Read-Host -Prompt "Enter the new name for the server"
 

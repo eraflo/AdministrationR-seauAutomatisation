@@ -1,7 +1,7 @@
 # Generation of Active Directory objects from JSON file
-using module ./Modules/AD/ADDS.psm1
-using module ./Modules/AD/DC.psm1
-using module ./Modules/Core/NetworkAdapter.psm1
+using module ../../Modules/AD/ADDS.psm1
+using module ../../Modules/AD/DC.psm1
+using module ../../Modules/Core/NetworkAdapter.psm1
 
 # Install the Active Directory Domain Services role
 $ADDS = [ADDS]::new()
