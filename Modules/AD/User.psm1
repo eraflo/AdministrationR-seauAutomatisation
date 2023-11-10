@@ -5,10 +5,11 @@ class User {
     [string]$Lastname
     [string]$SamAccountName
     [string]$DistinguishedName
-    [SecureString] $AccountPassword = (ConvertTo-SecureString -AsPlainText "P@ssw0rd" -Force)
     [string]$EmailAddress
     [string]$Fonction
     [string]$UserPrincipalName
+    [string]$DC1
+    [string]$DC2
 
     
     # constructor
@@ -18,13 +19,25 @@ class User {
     }
 
     User([string]$FirstName, [string]$Lastname,  [string]$Fonction, [string]$DC1, [string]$DC2) {
+        #  Check if domain exists
+        if (-not (Get-ADDomain -Server ($DC1 + "." + $DC2))) {
+            throw "The domain $DC1.$DC2 does not exist"
+        }
+        
         $this.FirstName = $FirstName
         $this.Lastname = $Lastname
-        $this.SamAccountName = $FirstName.Substring(0,1).ToLower() + $Lastname.ToLower()
+        if(($this.FirstName + $this.Lastname).Length -gt 20) {
+            $this.SamAccountName = ($this.FirstName + $this.Lastname).Substring(0, 20)
+        }
+        else {
+            $this.SamAccountName = ($this.FirstName + $this.Lastname)
+        }
         $this.DistinguishedName = "CN=$FirstName $Lastname,OU=Users, DC=$DC1, DC=$DC2"
         $this.EmailAddress = "$($this.SamAccountName)@$($DC1).fr"
         $this.Fonction = $Fonction
-        $this.UserPrincipalName = "$($this.SamAccountName)@$($DC1).$($DC2)"
+        $this.UserPrincipalName = "$($this.SamAccountName)@$($DC1).fr"
+        $this.DC1 = $DC1
+        $this.DC2 = $DC2
     }
 
     # Create the user in the domain
@@ -36,23 +49,25 @@ class User {
 
         # Create the user
         try {
-            @{
+            $Attributs = @{
                 Name = "$($this.FirstName) $($this.Lastname)"
-                DisplayName = "$($this.FirstName) $($this.Lastname)"
+                SamAccountName = $this.SamAccountName
                 GivenName = $this.FirstName
                 Surname = $this.Lastname
-                SamAccountName = $this.SamAccountName
+                DisplayName = "$($this.FirstName) $($this.Lastname)"
                 UserPrincipalName = $this.UserPrincipalName
                 EmailAddress = $this.EmailAddress
-                Title = $this.Fonction
-                Path = "OU=Users, DC=$($this.DC1), DC=$($this.DC2)"
-                ChangePasswordAtLogon = $true
+                Path = "CN=Users, DC=$($this.DC1), DC=$($this.DC2)"
+                AccountPassword = (ConvertTo-SecureString "P@ssw0rd" -AsPlainText -Force)
                 Enabled = $false
-                AccountPassword = $this.AccountPassword
-            } | New-ADUser
+                ChangePasswordAtLogon = $true
+            } 
+
+            New-ADUser @Attributs
             Write-HostAndLog "User $($this.SamAccountName) created"
         }
         catch {
+            Write-HostAndLog $_.Exception.Message
             throw "Error creating user $($this.SamAccountName)"
         }
     }

@@ -3,13 +3,20 @@ using module ../../Modules/AD/User.psm1
 # Ask for a csv file
 $csvFile = Read-Host "Enter the name of the csv file"
 
-$csvFilePath = Join-Path -Path $global:RootPath -ChildPath "Ressources"
+$csvFilePath = Join-Path -Path $global:RootPath -ChildPath "Resources"
 $csvFilePath = Join-Path -Path $csvFilePath -ChildPath "Data" 
 $csvFile = Join-Path -Path $csvFilePath -ChildPath $csvFile 
 
 # Check if the file exists
 if (-not (Test-Path $csvFile)) {
     throw "The file $csvFile does not exist"
+}
+
+# Ask confirmation for the file provided
+$confirmation = Read-Host "Are you sure you want to use the file $csvFile ? (y/n)"
+
+if ($confirmation -ne "y") {
+    throw "The script has been stopped"
 }
 
 # Get the content of the csv file
