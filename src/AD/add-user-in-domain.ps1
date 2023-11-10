@@ -1,7 +1,11 @@
 using module ../../Modules/AD/User.psm1
 
 # Ask for a csv file
-$csvFile = Read-Host "Enter the path of the csv file"
+$csvFile = Read-Host "Enter the name of the csv file"
+
+$csvFilePath = Join-Path -Path $global:RootPath -ChildPath "Ressources"
+$csvFilePath = Join-Path -Path $csvFilePath -ChildPath "Data" 
+$csvFile = Join-Path -Path $csvFilePath -ChildPath $csvFile 
 
 # Check if the file exists
 if (-not (Test-Path $csvFile)) {
