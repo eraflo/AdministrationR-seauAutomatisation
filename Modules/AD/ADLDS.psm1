@@ -1,4 +1,4 @@
-using Module ./Modules/Core/Service.psm1
+using Module ../Core/Service.psm1
 
 
 # Class for AD LDS service

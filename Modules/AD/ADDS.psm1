@@ -1,6 +1,6 @@
-using Module ./Modules/Core/Service.psm1
-using Module ./Modules/AD/ADLDS.psm1
-using Module ./Modules/AD/DC.psm1
+using Module ../Core/Service.psm1
+using Module ./ADLDS.psm1
+using Module ./DC.psm1
 
 # Class for Active Directory Domain Services
 class ADDS : Service {

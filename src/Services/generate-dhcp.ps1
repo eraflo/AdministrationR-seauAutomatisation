@@ -1,6 +1,6 @@
-using module ./Modules/AD/DHCP.psm1
-using module ./Modules/AD/DC.psm1
-using module ./Modules/Core/NetworkAdapter.psm1
+using module ../../Modules/AD/DHCP.psm1
+using module ../../Modules/AD/DC.psm1
+using module ../../Modules/Core/NetworkAdapter.psm1
 
 # Path to the JSON file
 $PathToGenerateJSON = $RootPath + "\Resources\Config\"
