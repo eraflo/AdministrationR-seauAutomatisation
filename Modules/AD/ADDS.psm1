@@ -19,6 +19,9 @@ class ADDS : Service {
     # List of forests
     [string[]]$Forests
 
+    # ----------------- Static properties -----------------
+    [bool] static $IsInstalled = $false
+
 
     # ----------------- Public functions -----------------
 
@@ -207,6 +210,8 @@ class ADDS : Service {
             try {
                 # Install the ADDS role
                 Install-WindowsFeature -Name "AD-Domain-Services" -IncludeManagementTools -ErrorAction Stop
+
+                [ADDS]::IsInstalled = $true
 
                 # Message of success
                 Write-HostAndLog "Active Directory Domain Services installed successfully"

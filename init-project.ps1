@@ -40,34 +40,6 @@ if(-not (Get-Module -ListAvailable -Name ActiveDirectory)) {
     Install-WindowsFeature -Name RSAT-AD-PowerShell -IncludeAllSubFeature
 }
 
-# Check if want to install the module for AD powershell cmdlets on a remote computer if there is more than one computer in the domain
-$computers = Get-ADComputer -Filter * | Select-Object -ExpandProperty Name
-if ($computers.Count -gt 1) {
-    Write-Host "Do you want to install the module for AD powershell cmdlets on a remote computer ? (y/n)"
-    
-    $answer = Read-Host
-    
-    if ($answer -eq "y") {
-        # Display the list of computers in the domain
-        Write-Host "List of computers in the domain:"
-        foreach ($computer in $computers) {
-            Write-Host $computer
-        }
-
-        # Ask the name of the computer on which we want to install the module for AD powershell cmdlets
-        Write-Host "Enter the name of the computer on which you want to install the module for AD powershell cmdlets"
-        $computerName = Read-Host
-
-        # Check if the computer exists in the domain
-        if ($computers -contains $computerName) {
-            Write-Host "Installing the module for AD powershell cmdlets on $computerName..."
-            Invoke-Command -ComputerName $computerName -ScriptBlock { Install-WindowsFeature -Name RSAT-AD-PowerShell -IncludeAllSubFeature }
-        }
-        else {
-            Write-Host "The computer $computerName does not exist in the domain"
-        }
-    }
-}
 
 # Root of the project
 $global:RootPath = "$PSScriptRoot"
@@ -96,6 +68,15 @@ $global:LogFilePath = "$global:LogFilePath" + "$(Get-Date -Format 'yyyy-MM-dd')"
 if(-not (Test-Path -Path $LogFilePath)) {
     New-Item -Path $LogFilePath -ItemType File
 }
+
+# Get infos on who launch the script, where and when, and the IP address of the computer
+$User = $env:USERNAME
+$Computer = $env:COMPUTERNAME
+$Hours = Get-Date -Format "HH:mm:ss"
+$IP = (Get-NetIPAddress -AddressFamily IPv4 -InterfaceAlias "Ethernet").IPAddress
+
+# Write the infos on who launch the script, where and when in the log file
+Write-HostAndLog -Message "[$IP] Script launched by $User on $Computer at $Hours" -LogFilePath $LogFilePath
 
 # Restart variable to know if we need to restart the computer
 $global:restart = $false
