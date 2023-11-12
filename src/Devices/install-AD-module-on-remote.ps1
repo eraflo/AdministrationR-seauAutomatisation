@@ -1,7 +1,7 @@
 using module ../../Modules/AD/ADDS.psm1
 
 # Check if ADDS is installed
-$installed = [ADDS]::IsInstalled()
+$installed = [ADDS]::IsInstalled
 
 Write-Host "AD-Domain-Services installed: $installed"
 

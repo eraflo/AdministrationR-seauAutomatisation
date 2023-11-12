@@ -4,8 +4,11 @@ param(
     [string]$ScriptToLaunchPath
 )
 
+# Check if above version version 7 (need to have C:/Program Files/PowerShell/7/Modules)
+$version = $Env:PSModulePath.Split(";")[2].Split("\")[3]
+
 # Update powershell
-if($PSVersionTable.PSVersion.Major -lt 7) {
+if($version -eq $null || $version -ne 7) {
     Write-Host "Updating powershell..."
     try {
         iex "& { $(irm https://aka.ms/install-powershell.ps1) } -UseMSI"
@@ -15,7 +18,7 @@ if($PSVersionTable.PSVersion.Major -lt 7) {
         Write-Host "You will need to rerun your script after the restart"
 
         # Restart the computer
-        Restart-Computer -Force
+        # Restart-Computer -Force
     }
     catch {
         Write-Host "Error while updating powershell"
