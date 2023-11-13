@@ -44,6 +44,43 @@ class OU {
         }
 
     }
+
+    # Deplace OU 
+    [void]Deplace([string]$NewPath) {
+        # Removing the protection
+        try {
+            Set-ADOrganizationalUnit -Identity $this.Path -ProtectedFromAccidentalDeletion $false
+        }
+        catch {
+            Write-HostAndLog -Message "The OU $($this.Name) has not been deplaced successfully"
+            Write-HostAndLog -Message $_.Exception.Message 
+            exit
+        }
+
+        # Deplace the OU
+        try {
+            Write-HostAndLog -Message "Deplacing the OU $($this.Name) to $NewPath"
+            Move-ADObject -Identity $this.Path -TargetPath $NewPath -ErrorAction Stop
+            $this.Path = $NewPath
+        }
+        catch {
+            Write-HostAndLog -Message "The OU $($this.Name) has not been deplaced successfully"
+            Write-HostAndLog -Message $_.Exception.Message 
+            exit
+        }
+
+        if($this.Protected) {
+            try {
+                Set-ADOrganizationalUnit -Identity $this.Path -ProtectedFromAccidentalDeletion $true
+            }
+            catch {
+                Write-HostAndLog -Message "The OU $($this.Name) has had a problem setting it to protected"
+                Write-HostAndLog -Message $_.Exception.Message 
+                exit
+            }
+        }
+
+    }
     
 
 }
