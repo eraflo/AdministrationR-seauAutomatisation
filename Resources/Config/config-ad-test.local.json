@@ -4,15 +4,15 @@
         "CN1": "test",
         "CN2": "local",
         "Description": "test",
-        "SafeModeAdministratorPassword": "01000000d08c9ddf0115d1118c7a00c04fc297eb010000007c1b3fb57557304bb5d99c8a4d1ce3fd00000000020000000000106600000001000020000000e7452460319d0918a8740223101bb2516f3978fbf8c96c3fbe55a4e207326401000000000e800000000200002000000015f627ee97c034391b6b7534dfbf028c07260955a0bca3d6587840548f4d2854200000007524cfd50ced1f595d4fa783d59368aa1fd470b82adb307b800e6ce4fb31ffcd40000000ae463d9707187cf671aba4c4cd6059a80ff95ae9f85e6761e41718f51400b6620aebed8162420edc270932577bc7a6b999bf7a4a882edfd3564d24ba2d0692d9",
+        "SafeModeAdministratorPassword": "01000000d08c9ddf0115d1118c7a00c04fc297eb010000007c1b3fb57557304bb5d99c8a4d1ce3fd0000000002000000000010660000000100002000000040bd9cd5e0826eb6fde50346ec32d58dd10235be73305f20f20cd3fdb664fedc000000000e800000000200002000000029093c3663c2035af0de053b96a7d2557e4ae18f9b2fa796a4d4c710bf213df1200000008188599ebe7538f90a5cf3e7e62f5fea58e2acca8c216cfc7b2ad4fd5c19793840000000914347ec8a82225255a0a1df5c62453e587c46db15d1ca26c6921709723118f10ac646cb3749019e6a23ef19fc0b154d72ae0d40f238b111c3bacf44b6e70c38",
         "ForestMode": "4",
         "DomainMode": "4",
         "DomainController": {
-            "Name": "WIN-VGMUHSO4516",
+            "Name": "Test",
             "Site": "principal",
             "OSVersion": "WindowsServer2019",
             "InstallDNS": "True",
-            "ReplicationSourceDC": "WIN-VGMUHSO4516",
+            "ReplicationSourceDC": "Test",
             "NetAdapter": {
                 "Name": "Ethernet",
                 "IPAddress": "192.168.0.2",

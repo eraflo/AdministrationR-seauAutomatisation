@@ -157,8 +157,11 @@ class ADDS : Service {
 
 
         try {
+            #Get Netbios
+            $Netbios = $Name.Split(".")[0]
+
             # Create the new forest
-            Install-ADDSForest -DomainName $Name -CreateDnsDelegation:$false -DatabasePath $this.DatabasePath -DomainMode $DomainMode -ForestMode $ForestMode -LogPath $this.LogPath -SysvolPath $this.SYSVOLPath -SafeModeAdministratorPassword $Password -Force:$true -ErrorAction Stop
+            Install-ADDSForest -NetBIOSName $Netbios -DomainMode $DomainMode -ForestMode $ForestMode -DatabasePath $this.DatabasePath -LogPath $this.LogPath -SYSVOLPath $this.SYSVOLPath -SafeModeAdministratorPassword $Password -Force:$true -ErrorAction Stop
 
             # Add a new forest to the list
             $this.Forests += $Name
