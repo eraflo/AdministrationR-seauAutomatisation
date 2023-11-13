@@ -48,3 +48,4 @@ Actually, there is :
 
 ## Write-HostAndLog
 Function permitting to write something in the console and in the file log of the executed script. You can use it in all your script, even module, because it is import directly in the entry point of the project.
+
