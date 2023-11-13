@@ -1,60 +1,108 @@
+using module ./Modules/WriteHostAndLog.psm1
 param(
     [Parameter(Mandatory=$true)]
     [string]$ScriptToLaunchPath
 )
 
-# Use the console in administrator mode
-if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
-    
-    # Relaunch the script in administrator mode and don't close the current window
-    Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`" -ScriptToLaunchPath `"$ScriptToLaunchPath`"" -Verb RunAs 
+# Check if above version version 7 (need to have C:/Program Files/PowerShell/7/Modules)
+$version = $Env:PSModulePath.Split(";")[2].Split("\")[3]
 
+# Update powershell
+if($version -eq $null -or $version -ne 7) {
+    Write-Host "Updating powershell..."
+    try {
+        iex "& { $(irm https://aka.ms/install-powershell.ps1) } -UseMSI"
+        
+        # Restart the script with the new version of powershell
+        Write-Host "Restarting powershell..."
+        Write-Host "You will need to rerun your script after the restart"
+
+        # Restart program
+        Restart-Computer
+    }
+    catch {
+        Write-Host "Error while updating powershell"
+        Write-Host $_.Exception.Message
+        Break
+    }
+}
+
+if($IsWindows) {
+    # Commande to run as administrator on Windows
+    $runAdmin = "Start-Process powershell -Verb runAs -ArgumentList '-NoExit', '-File', '$PSCommandPath', '$ScriptToLaunchPath'"
+}
+elseif ($IsLinux) {
+    $runAdmin = "sudo pwsh -NoExit -File $PSCommandPath $ScriptToLaunchPath"
+}
+
+# Check if the script is running as administrator
+if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
+    Write-Host "The script is not running as administrator"
+    Write-Host "Restarting the script as administrator..."
+    Invoke-Expression $runAdmin
     Break
 }
 
+
+# Install the module for AD powershell cmdlets
+if(-not (Get-Module -ListAvailable -Name ActiveDirectory)) {
+    Write-Host "Installing the module for AD powershell cmdlets..."
+    Install-WindowsFeature -Name RSAT-AD-PowerShell -IncludeAllSubFeature
+}
+
+
 # Root of the project
-$RootPath = "$PSScriptRoot"
+$global:RootPath = "$PSScriptRoot"
 
 # Place ourselves in the root of the project
 Set-Location -Path $RootPath
 
-# Path to the JSON file with the configuration for the modules
-$JSONPathConfig = "$PSScriptRoot\Resources\Config\config.json"
-
-# Import JSON file
-$JSONConfig = Get-Content -Path $JSONPathConfig | ConvertFrom-Json
-
-# Create a directory in Module directory to store .psd1 files if it doesn't exist
-if (-not (Test-Path "$PSScriptRoot\Modules\psd1")) {
-    New-Item -Path "$PSScriptRoot\Modules\psd1" -ItemType Directory
-}
-
-
-# Check all modules
-foreach ($module in $JSONConfig.ModulePaths) {
-    foreach($class in $module.Classes) {
-        # Create a psd1 file for each module in $JSONConfig.ModulePaths
-        $psd1Path = "$PSScriptRoot\Modules\psd1\$($class.Name).psd1"
-        $psm1Path = "$PSScriptRoot$($module.Path)\$($class.Name).psm1"
-
-        $psd1Content = "@{ `n`tModuleToProcess = '$psm1Path' `n`tPowerShellVersion = '5.1' `n}"
-        $psd1Content | Out-File -FilePath $psd1Path -Encoding ascii
-    }
-}
-
-
 # Verify the path of the script to execute
 if ($ScriptToLaunchPath -notlike "$PSScriptRoot*") {
-    $scriptPath = "$PSScriptRoot\src\$ScriptToLaunchPath"
+    $scriptPath = Join-Path -Path $PSScriptRoot -ChildPath "src"
+    $scriptPath = Join-Path -Path $scriptPath -ChildPath $ScriptToLaunchPath
 }
 else {
     $scriptPath = "$ScriptToLaunchPath"
 }
 
-# Execute the script
-& $scriptPath
+# Generate a Log Directory
+$LogDirectory = Join-Path -Path $RootPath -ChildPath "logs"
+if (-not (Test-Path -Path $LogDirectory)) {
+    New-Item -Path $LogDirectory -ItemType Directory
+}
 
-# Wait for the user to press a key
-Read-Host -Prompt "Press Enter to exit"
+# Generate a log file for this script each day
+$global:LogFilePath = Join-Path -Path $LogDirectory -ChildPath ""
+$global:LogFilePath = "$global:LogFilePath" + "$(Get-Date -Format 'yyyy-MM-dd')" + "_$($(Split-Path -Path $scriptPath -Leaf).Replace('.ps1','')).log"
+if(-not (Test-Path -Path $LogFilePath)) {
+    New-Item -Path $LogFilePath -ItemType File
+}
+
+# Get infos on who launch the script, where and when, and the IP address of the computer
+$User = $env:USERNAME
+$Computer = $env:COMPUTERNAME
+$Hours = Get-Date -Format "HH:mm:ss"
+$IP = (Get-NetIPAddress -AddressFamily IPv4 -InterfaceAlias "Ethernet").IPAddress
+
+# Write the infos on who launch the script, where and when in the log file
+Write-HostAndLog -Message "[$IP] Script launched by $User on $Computer at $Hours" -LogFilePath $LogFilePath
+
+# Restart variable to know if we need to restart the computer
+$global:restart = $false
+
+# Execute the script
+Write-Host "Executing the script $scriptPath"
+Write-Host "Log file: $LogFilePath"
+
+# Execute the script and redirect the output to the log file
+& $scriptPath 
+
+
+# Restart the computer if needed
+if ($restart) {
+    Write-Host "Restarting the computer..."
+    Restart-Computer
+}
 
 
