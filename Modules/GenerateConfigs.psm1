@@ -285,3 +285,113 @@ function GenerateCSVUsers($ProjectRoot) {
     
     $CSVContent | Out-File -FilePath $PathToGenerateCSV -Encoding ascii
 }
+
+# Generate a csv for creating OU
+function GenerateOUCsv($ProjectRoot) {
+    # Generate the path to the CSV file
+    $ResourcesPath = $ProjectRoot + "\Resources"
+    $ConfigPath = $ResourcesPath + "\Data"
+
+    # Check if folders exist
+    if((Test-Path $ResourcesPath) -eq $false) {
+        New-Item -ItemType Directory -Path $ResourcesPath
+    }
+
+    if((Test-Path $ConfigPath) -eq $false) {
+        New-Item -ItemType Directory -Path $ConfigPath
+    }
+
+    # Choose the number of OU to create
+    $NumberOfOUs = Read-Host -Prompt "Choose the number of OU to create"
+
+    # Check if the number of OU is not empty
+    if ($NumberOfOUs -eq "") {
+        Write-Host "The number of OU cannot be empty. Please try again."
+        GenerateOUCsv
+    }
+
+    # Check if the number of OU is a number
+    if ($NumberOfOUs -notmatch "^[0-9]+$") {
+        Write-Host "The number of OU must be a number. Please try again."
+        GenerateOUCsv
+    }
+
+    # Check the number of csv file already created
+    $CSVFiles = Get-ChildItem -Path $ConfigPath -Filter "ous-*.csv"
+
+    $CSVFilesCount = $CSVFiles.Count
+
+    # Generate the name of the CSV file
+    $CSVFileName = "ous-" + $CSVFilesCount + ".csv"
+
+    # Generate the path to the CSV file
+    $PathToGenerateCSV = $ConfigPath + "\" + $CSVFileName
+
+    # Create the CSV file
+    Write-Host "Creating CSV file for OU at : $PathToGenerateCSV"
+
+    # Write in the CSV file
+    $CSVContent = 'OUName;OUPath;Protected'
+
+    # Generate n ligne empty
+    for ($i = 0; $i -lt $NumberOfOUs; $i++) {
+        $CSVContent += "`n;;"
+    }
+
+    $CSVContent | Out-File -FilePath $PathToGenerateCSV -Encoding ascii
+}
+
+# Generate a csv for creating groups
+function GenerateGroupCsv($ProjectRoot) {
+    # Generate the path to the CSV file
+    $ResourcesPath = $ProjectRoot + "\Resources"
+    $ConfigPath = $ResourcesPath + "\Data"
+
+    # Check if folders exist
+    if((Test-Path $ResourcesPath) -eq $false) {
+        New-Item -ItemType Directory -Path $ResourcesPath
+    }
+
+    if((Test-Path $ConfigPath) -eq $false) {
+        New-Item -ItemType Directory -Path $ConfigPath
+    }
+
+    # Choose the number of groups to create
+    $NumberOfGroups = Read-Host -Prompt "Choose the number of groups to create"
+
+    # Check if the number of groups is not empty
+    if ($NumberOfGroups -eq "") {
+        Write-Host "The number of groups cannot be empty. Please try again."
+        GenerateGroupCsv
+    }
+
+    # Check if the number of groups is a number
+    if ($NumberOfGroups -notmatch "^[0-9]+$") {
+        Write-Host "The number of groups must be a number. Please try again."
+        GenerateGroupCsv
+    }
+
+    # Check the number of csv file already created
+    $CSVFiles = Get-ChildItem -Path $ConfigPath -Filter "groups-*.csv"
+
+    $CSVFilesCount = $CSVFiles.Count
+
+    # Generate the name of the CSV file
+    $CSVFileName = "groups-" + $CSVFilesCount + ".csv"
+
+    # Generate the path to the CSV file
+    $PathToGenerateCSV = $ConfigPath + "\" + $CSVFileName
+
+    # Create the CSV file
+    Write-Host "Creating CSV file for groups at : $PathToGenerateCSV"
+
+    # Write in the CSV file
+    $CSVContent = 'GroupName;GroupPath;GroupScope;GroupCategory;GroupDescription'
+
+    # Generate n ligne empty
+    for ($i = 0; $i -lt $NumberOfGroups; $i++) {
+        $CSVContent += "`n;;;;"
+    }
+
+    $CSVContent | Out-File -FilePath $PathToGenerateCSV -Encoding ascii
+}
