@@ -18,7 +18,7 @@ class OU {
     }
 
     # Create the OU
-    [void]Create([bool]$AtRoot) {
+    [void]Create() {
         Write-HostAndLog -Message "Creating the OU $($this.Name)" 
 
         
